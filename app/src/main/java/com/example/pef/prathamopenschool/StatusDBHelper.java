@@ -3,6 +3,9 @@ package com.example.pef.prathamopenschool;
 import android.content.Context;
 import android.database.Cursor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by PEF-2 on 30/05/2016.
  */
@@ -302,5 +305,30 @@ public class StatusDBHelper extends DBHelper {
             return false;
         }
     }
+
+    // Get records of Aaj Ka Sawaal from Score DB
+    public List<String> getAKSRecordsOfSelectedGroup(String selectedGroupId) {
+        try {
+            database = getWritableDatabase();
+            List<String> list = new ArrayList<String>();
+            {
+                Cursor cursor = database.rawQuery("SELECT StartDateTime FROM Scores WHERE Level = 99 AND GroupID = ? ", new String[]{selectedGroupId});
+                cursor.moveToFirst();
+                while (cursor.isAfterLast() == false) {
+
+                    list.add(cursor.getString(cursor.getColumnIndex("StartDateTime")));
+                    cursor.moveToNext();
+                }
+                database.close();
+
+            }
+            return list;
+
+        } catch (Exception ex) {
+            _PopulateLogValues(ex, "getAKSRecordsOfSelectedGroup");
+            return null;
+        }
+    }
+
 
 }

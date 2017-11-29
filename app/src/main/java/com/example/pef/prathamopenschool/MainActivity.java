@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
@@ -26,9 +25,9 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -79,13 +78,15 @@ public class MainActivity extends AppCompatActivity {
     Utility Util;
 
     // Aaj Ka Sawaal
-    TextView tv_Que, tv_result;
-    RadioGroup rg_Opt;
-    RadioButton rb_Opt1, rb_Opt2, rb_Opt3, rb_Opt4, selectedOption;
-    Button btn_Submit, btn_Skip;
+    TextView tv_Que;
+    Button tv_opt1, tv_opt2, tv_opt3, tv_opt4;//, tv_result;
+    //    RadioGroup rg_Opt;
+//    RadioButton rb_Opt1, rb_Opt2, rb_Opt3, rb_Opt4, selectedOption;
+    ImageButton btn_Submit, btn_Skip;
     AttendanceDBHelper attendanceDBHelper;
     String QueId, Question, QuestionType, Subject, Option1, Option2, Option3, Option4, Answer, resourceType, resourcePath, programLanguage;
     String aajKaSawaalStartTime;
+    String selectedOption = "";
 
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -107,10 +108,12 @@ public class MainActivity extends AppCompatActivity {
 
         // Aaj Ka Sawaal Played
         if (aajKaSawalPlayed != null && aajKaSawalPlayed.equals("1")) {
-
+            // Do nothing
         }
         // Aaj Ka Sawaal NOT Played
         else if (aajKaSawalPlayed != null && aajKaSawalPlayed.equals("0")) {
+
+            // Play Aaj Ka Sawaal
 
             // Update updateTrailerCountbyGroupID to 1 if played
             StatusDBHelper updateTrailerCount = new StatusDBHelper(MainActivity.this);
@@ -119,30 +122,39 @@ public class MainActivity extends AppCompatActivity {
 
             final MediaPlayer correct = MediaPlayer.create(MainActivity.this, R.raw.correct);
             final MediaPlayer wrong = MediaPlayer.create(MainActivity.this, R.raw.wrong);
+
             final Dialog resultDialog = new Dialog(MainActivity.this);
             final Dialog dialog = new Dialog(MainActivity.this);
 
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.setContentView(R.layout.activity_aaj_ka_sawaal);
+            dialog.setContentView(R.layout.sample_aajkasawaal);
+            dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+
+
+            LinearLayout mainScreen = dialog.findViewById(R.id.sampleAajkaSawaal);
+            LinearLayout correctScreen = dialog.findViewById(R.id.aajkaSawaal_correct);
+            LinearLayout wrongScreen = dialog.findViewById(R.id.aajkaSawaal_wrong);
+
+            mainScreen.setVisibility(View.VISIBLE);
+            correctScreen.setVisibility(View.GONE);
+            wrongScreen.setVisibility(View.GONE);
 
             // Memory Allocation
             tv_Que = dialog.findViewById(R.id.tv_question);
-            tv_result = dialog.findViewById(R.id.tv_result);
-
-            rg_Opt = dialog.findViewById(R.id.rg_options);
-
-            rb_Opt1 = dialog.findViewById(R.id.rb_O1);
-            rb_Opt2 = dialog.findViewById(R.id.rb_O2);
-            rb_Opt3 = dialog.findViewById(R.id.rb_O3);
-            rb_Opt4 = dialog.findViewById(R.id.rb_O4);
+            //tv_result = dialog.findViewById(R.id.tv_result);
 
             btn_Submit = dialog.findViewById(R.id.btn_submit);
             btn_Skip = dialog.findViewById(R.id.btn_skip);
 
+            tv_opt1 = dialog.findViewById(R.id.opt1);
+            tv_opt2 = dialog.findViewById(R.id.opt2);
+            tv_opt3 = dialog.findViewById(R.id.opt3);
+            tv_opt4 = dialog.findViewById(R.id.opt4);
+
 
             dialog.setCanceledOnTouchOutside(false);
             dialog.setCancelable(false);
-            dialog.getWindow().setLayout(800, 450);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
             dialog.show();
 
 
@@ -177,15 +189,66 @@ public class MainActivity extends AppCompatActivity {
 
                 // Set Question
                 tv_Que.setText(Question);
-                rb_Opt1.setText(Option1);
-                rb_Opt2.setText(Option2);
-                rb_Opt3.setText(Option3);
-                rb_Opt4.setText(Option4);
+                tv_opt1.setText(Option1);
+                tv_opt2.setText(Option2);
+                tv_opt3.setText(Option3);
+                tv_opt4.setText(Option4);
 
 
             } catch (Exception e) {
                 e.getMessage();
             }
+
+            tv_opt1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    tv_opt1.setBackgroundResource(R.drawable.ans_box_left_selected);
+                    tv_opt2.setBackgroundResource(R.drawable.ans_box_right);
+                    tv_opt3.setBackgroundResource(R.drawable.ans_box_left);
+                    tv_opt4.setBackgroundResource(R.drawable.ans_box_right);
+
+                    selectedOption = tv_opt1.getText().toString();
+
+                }
+            });
+            tv_opt2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    tv_opt1.setBackgroundResource(R.drawable.ans_box_left);
+                    tv_opt2.setBackgroundResource(R.drawable.ans_box_right_selected);
+                    tv_opt3.setBackgroundResource(R.drawable.ans_box_left);
+                    tv_opt4.setBackgroundResource(R.drawable.ans_box_right);
+
+                    selectedOption = tv_opt2.getText().toString();
+
+
+                }
+            });
+            tv_opt3.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    tv_opt1.setBackgroundResource(R.drawable.ans_box_left);
+                    tv_opt2.setBackgroundResource(R.drawable.ans_box_right);
+                    tv_opt3.setBackgroundResource(R.drawable.ans_box_left_selected);
+                    tv_opt4.setBackgroundResource(R.drawable.ans_box_right);
+
+                    selectedOption = tv_opt3.getText().toString();
+
+                }
+            });
+            tv_opt4.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    tv_opt1.setBackgroundResource(R.drawable.ans_box_left);
+                    tv_opt2.setBackgroundResource(R.drawable.ans_box_right);
+                    tv_opt3.setBackgroundResource(R.drawable.ans_box_left);
+                    tv_opt4.setBackgroundResource(R.drawable.ans_box_right_selected);
+
+                    selectedOption = tv_opt4.getText().toString();
+
+                }
+            });
 
 
             // Skip Button Action
@@ -216,16 +279,6 @@ public class MainActivity extends AppCompatActivity {
                     // Disable buttons after selection
                     btn_Submit.setClickable(false);
                     btn_Skip.setClickable(false);
-                    rb_Opt1.setClickable(false);
-                    rb_Opt2.setClickable(false);
-                    rb_Opt3.setClickable(false);
-                    rb_Opt4.setClickable(false);
-
-                    // get selected radio button from radioGroup
-                    int selectedId = rg_Opt.getCheckedRadioButtonId();
-                    // find the radio button by returned id
-                    selectedOption = (RadioButton) dialog.findViewById(selectedId);
-                    String option = selectedOption.getText().toString();
 
                     boolean answer = false;
                     sc.SessionID = MultiPhotoSelectActivity.sessionId;
@@ -243,37 +296,48 @@ public class MainActivity extends AppCompatActivity {
                     String deviceId = Settings.Secure.getString(MainActivity.this.getContentResolver(), Settings.Secure.ANDROID_ID);
                     sc.DeviceID = deviceId.equals(null) ? "0000" : deviceId;
 
-
-                    if (option.equals(Answer)) {
-                        tv_result.setText("Correct Answer !!!");
-                        tv_result.setTextColor(Color.GREEN);
-
+                    // get selected textview
+                    if (selectedOption.equals(Answer)) {
+                        // CORRECT ANSWER
                         resultDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                        resultDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
                         resultDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
                         resultDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                        resultDialog.setContentView(getLayoutInflater().inflate(R.layout.correct_image_layout
-                                , null));
+                        resultDialog.setContentView(getLayoutInflater().inflate(R.layout.sample_aajkasawaal, null));
+
+                        LinearLayout mainScreen = resultDialog.findViewById(R.id.sampleAajkaSawaal);
+                        LinearLayout correctScreen = resultDialog.findViewById(R.id.aajkaSawaal_correct);
+                        LinearLayout wrongScreen = resultDialog.findViewById(R.id.aajkaSawaal_wrong);
+
+                        mainScreen.setVisibility(View.GONE);
+                        correctScreen.setVisibility(View.VISIBLE);
+                        wrongScreen.setVisibility(View.GONE);
 
                         resultDialog.show();
 
                         correct.start();
-
-                        //tv_result.setCompoundDrawablesWithIntrinsicBounds(R.drawable.correct_answer, 0, 0, 0);
                         sc.ScoredMarks = 10;
+
                     } else if (answer == false) {
-
-
-                        tv_result.setText("Wrong Answer !!!\nCorrect Answer is " + Answer + " !!!");
-                        tv_result.setTextColor(Color.RED);
-
-
-                        resultDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+                        // if WRONG ANS
                         resultDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                        resultDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+                        resultDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
                         resultDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                        resultDialog.setContentView(getLayoutInflater().inflate(R.layout.wrong_image_layout
-                                , null));
+                        resultDialog.setContentView(getLayoutInflater().inflate(R.layout.sample_aajkasawaal, null));
+
+                        LinearLayout mainScreen = resultDialog.findViewById(R.id.sampleAajkaSawaal);
+                        LinearLayout correctScreen = resultDialog.findViewById(R.id.aajkaSawaal_correct);
+                        LinearLayout wrongScreen = resultDialog.findViewById(R.id.aajkaSawaal_wrong);
+
+                        TextView tvWrong = resultDialog.findViewById(R.id.tv_wrong_ans);
+                        tvWrong.setText("Correct Answer is " + Answer + " !!!");
+
+                        mainScreen.setVisibility(View.GONE);
+                        correctScreen.setVisibility(View.GONE);
+                        wrongScreen.setVisibility(View.VISIBLE);
+
                         resultDialog.show();
-                        //tv_result.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.wrong_answer, 0);
 
                         wrong.start();
 
@@ -369,6 +433,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
 
     // Reading CRL Json From Internal Memory
     public String loadQueJSONFromAsset() {

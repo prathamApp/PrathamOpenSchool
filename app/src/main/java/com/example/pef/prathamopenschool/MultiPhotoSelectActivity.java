@@ -80,7 +80,7 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
     public static RelativeLayout myView;
     static Boolean pauseFlg = false;
     public static String deviceID = "DeviceID";
-
+    int aajKaSawalPlayed = 3;
     boolean doubleBackToExitPressedOnce = false;
 
 
@@ -91,6 +91,7 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
         myView = (RelativeLayout) findViewById(R.id.my_layoutId);
 
         setContentView(R.layout.group_select);
+        //setContentView(R.layout.sample_aajkasawaal);
 
         startService(new Intent(this, WebViewService.class));
 
@@ -325,10 +326,44 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
                 attendanceDBHelper.Add(attendance);
                 BackupDatabase.backup(this);
 
+
+                /* -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- AAJ KA SAWAAL PLAYED ? -*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*- */
+
                 // Decide the next screen depending on aajKaSawalPlayed status
-                // Flag Played if Submit
+
+                // Get Current Date
+                String currentDate = utility.GetCurrentDate();
+
+                // Get Currently Selected Group
+                String currentlySelectedGroup = selectedGroupId;
+
+                // Fetch records
                 StatusDBHelper sdbh = new StatusDBHelper(sessionContex);
-                int aajKaSawalPlayed = sdbh.getAajKaSawalPlayedStatus(selectedGroupId);
+                List<String> AKSRecords = sdbh.getAKSRecordsOfSelectedGroup(selectedGroupId);
+
+                // Loop to get Aaj Ka Sawaal Played Status
+                if (!AKSRecords.equals(null)) {
+
+                    if (AKSRecords.size() == 0) {
+                        // No Record Found
+                        aajKaSawalPlayed = 0;
+                    }
+
+                    for (int i = 0; i < AKSRecords.size(); i++) {
+
+                        if (AKSRecords.get(i).contains(currentDate)) {
+                            // If Record Found i.e Aaj Ka Sawaal Played
+                            aajKaSawalPlayed = 1;
+                        } else {
+                            // If Record NOT Found i.e Aaj Ka Sawaal Played
+                            aajKaSawalPlayed = 0;
+                        }
+                    }
+
+                }
+
+                //set accordingly
+                // int aajKaSawalPlayed = sdbh.getAajKaSawalPlayedStatus(selectedGroupId); //OLD LOGIC
 
                 // if Questions.json not present
                 JSONArray queJsonArray = null;
@@ -348,6 +383,7 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
                         main.putExtra("nodeList", newNodeList.toString());
                     }
                     main.putExtra("aajKaSawalPlayed", "1");
+                    main.putExtra("selectedGroupId", selectedGroupId);
                     startActivity(main);
                     finish();
                 }
@@ -364,6 +400,8 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
                         main.putExtra("nodeList", newNodeList.toString());
                     }
                     main.putExtra("aajKaSawalPlayed", "0");
+                    main.putExtra("selectedGroupId", selectedGroupId);
+
                     startActivity(main);
                     finish();
                 }
@@ -376,6 +414,8 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
                         main.putExtra("nodeList", newNodeList.toString());
                     }
                     main.putExtra("aajKaSawalPlayed", "3");
+                    main.putExtra("selectedGroupId", selectedGroupId);
+
 
                     startActivity(main);
                     finish();
@@ -413,10 +453,45 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
+
+                /* -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*- AAJ KA SAWAAL PLAYED ? -*-*-*-*-*-*-*-**-*-*-*-*-*-*-*-*-*-*- */
+
+
                 // Decide the next screen depending on aajKaSawalPlayed status
-                // Flag Played if Submit
+
+                // Get Current Date
+                String currentDate = utility.GetCurrentDate();
+
+                // Get Currently Selected Group
+                String currentlySelectedGroup = selectedGroupId;
+
+                // Fetch records
                 StatusDBHelper sdbh = new StatusDBHelper(sessionContex);
-                int aajKaSawalPlayed = sdbh.getAajKaSawalPlayedStatus(selectedGroupId);
+                List<String> AKSRecords = sdbh.getAKSRecordsOfSelectedGroup(selectedGroupId);
+
+                // Loop to get Aaj Ka Sawaal Played Status
+                if (!AKSRecords.equals(null)) {
+
+                    if (AKSRecords.size() == 0) {
+                        // No Record Found
+                        aajKaSawalPlayed = 0;
+                    }
+
+                    for (int i = 0; i < AKSRecords.size(); i++) {
+
+                        if (AKSRecords.get(i).contains(currentDate)) {
+                            // If Record Found i.e Aaj Ka Sawaal Played
+                            aajKaSawalPlayed = 1;
+                        } else {
+                            // If Record NOT Found i.e Aaj Ka Sawaal Played
+                            aajKaSawalPlayed = 0;
+                        }
+                    }
+
+                }
+
+                //set accordingly
+                // int aajKaSawalPlayed = sdbh.getAajKaSawalPlayedStatus(selectedGroupId); //OLD LOGIC
 
                 // if Questions.json not present
                 JSONArray queJsonArray = null;
@@ -435,6 +510,8 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
                         main.putExtra("nodeList", newNodeList.toString());
                     }
                     main.putExtra("aajKaSawalPlayed", "1");
+                    main.putExtra("selectedGroupId", selectedGroupId);
+
 
                     startActivity(main);
                     finish();
@@ -450,6 +527,8 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
                         main.putExtra("nodeList", newNodeList.toString());
                     }
                     main.putExtra("aajKaSawalPlayed", "0");
+                    main.putExtra("selectedGroupId", selectedGroupId);
+
 
                     startActivity(main);
                     finish();
@@ -462,6 +541,8 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
                         main.putExtra("nodeList", newNodeList.toString());
                     }
                     main.putExtra("aajKaSawalPlayed", "3");
+                    main.putExtra("selectedGroupId", selectedGroupId);
+
                     startActivity(main);
                     finish();
                 }
@@ -758,4 +839,42 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
             }
         }.start();
     }
+
+
+//    // To Select only one radio button from Radio Group
+//    public void oneRadioButtonClicked(View view) {
+//
+//        // Is the button now checked?
+//        boolean checked = ((RadioButton) view).isChecked();
+//        RadioGroup rg = (RadioGroup) findViewById(R.id.rg_options);
+//
+//        switch (view.getId()) {
+//
+//
+//            case R.id.rb_O1: {
+//                rg.clearCheck();
+//                rg.check(view.getId());
+//                break;
+//            }
+//
+//            case R.id.rb_O2: {
+//                rg.clearCheck();
+//                rg.check(view.getId());
+//                break;
+//            }
+//
+//            case R.id.rb_O3: {
+//                rg.clearCheck();
+//                rg.check(view.getId());
+//                break;
+//            }
+//
+//            case R.id.rb_O4: {
+//                rg.clearCheck();
+//                rg.check(view.getId());
+//                break;
+//            }
+//
+//        }
+//    }
 }

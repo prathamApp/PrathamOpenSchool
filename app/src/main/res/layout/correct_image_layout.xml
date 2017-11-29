@@ -6,9 +6,18 @@
     android:gravity="center"
     android:orientation="vertical">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="Correct Answer !!!"
+        android:textColor="#FFC107"
+        android:textSize="28sp"
+        android:textStyle="bold" />
+
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/correct_answer" />
+        android:background="@drawable/correct_ans" />
 
 </LinearLayout>
