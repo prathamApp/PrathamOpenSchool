@@ -45,7 +45,6 @@
     <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_INTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
-
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <uses-feature
@@ -258,7 +257,9 @@
             </intent-filter>
         </receiver>
 
-
+        <activity
+            android:name=".AKSGraph"
+            android:screenOrientation="sensorLandscape" />
     </application>
 
 </manifest>

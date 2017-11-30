@@ -9,6 +9,8 @@
         android:id="@+id/sampleAajkaSawaal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:orientation="vertical"
         android:visibility="visible">
 
@@ -29,10 +31,11 @@
                 android:background="@drawable/que_box"
                 android:gravity="center"
                 android:maxLines="2"
-                android:padding="10dp"
-                android:text="हवा का घनत्व कब कम होता है ?"
+                android:paddingLeft="50dp"
+                android:paddingRight="50dp"
+                android:text="sampleहवा का घनत्व कब कम होता है ?वा का घनत्व कब कम होता हैवा का घनत्व कब कम होता हैवा "
                 android:textColor="#FFFFFF"
-                android:textSize="22sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
         </LinearLayout>
@@ -120,7 +123,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_margin="16dp"
             android:gravity="center_horizontal"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent">
@@ -160,7 +163,8 @@
             android:text="Correct Answer !!!"
             android:textColor="#FFC107"
             android:textSize="28sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:visibility="gone" />
 
         <ImageView
             android:layout_width="200dp"
@@ -188,7 +192,8 @@
             android:text="Wrong Answer !!!"
             android:textColor="#FFC107"
             android:textSize="24sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:visibility="gone" />
 
         <ImageView
             android:layout_width="200dp"

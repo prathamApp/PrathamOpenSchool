@@ -82,7 +82,7 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
     public static String deviceID = "DeviceID";
     int aajKaSawalPlayed = 3;
     boolean doubleBackToExitPressedOnce = false;
-
+    String checkQJson;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -368,11 +368,11 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
                 // if Questions.json not present
                 JSONArray queJsonArray = null;
                 try {
-                    queJsonArray = new JSONArray(loadQueJSONFromAsset());
+                    checkQJson = loadQueJSONFromAsset();
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
-                if (queJsonArray == null) {
+                if (checkQJson.equals(null)){
                     aajKaSawalPlayed = 3;
                 }
 
@@ -498,7 +498,7 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
                 try {
                     queJsonArray = new JSONArray(loadQueJSONFromAsset());
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
                 if (queJsonArray == null) {
                     aajKaSawalPlayed = 3;

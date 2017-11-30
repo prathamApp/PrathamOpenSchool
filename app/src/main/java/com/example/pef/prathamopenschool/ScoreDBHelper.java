@@ -18,6 +18,20 @@ public class ScoreDBHelper extends DBHelper {
         database = this.getWritableDatabase();
     }
 
+    public List<Score> GetAKSGroupScore() {
+        try {
+            Cursor cursor;
+            database = getWritableDatabase();
+            cursor = database.rawQuery("select distinct GroupID from Scores where Level = 99", null);
+
+            return PopulateScoreListFromCursor(cursor);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
     public int GetPlayedResourcesCount() {
         try {
             Cursor cursor = database.rawQuery("select distinct ResourceID from " + TABLENAME + "", null);
@@ -251,6 +265,19 @@ public class ScoreDBHelper extends DBHelper {
             Cursor cursor;
             database = getWritableDatabase();
             cursor = database.rawQuery("select SUM(ScoredMarks) as ScoredMarks, SUM(TotalMarks) as TotalMarks from Scores where (StartDateTime and EndDateTime between '" + dp_FromDateText + "' and '" + dp_ToDateText + "') and GroupID = '" + GroupID + "' and ResourceID in (" + resIDs + ")", null);
+            return PopulateGroupScoresFromCursor(cursor);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    public List<Score> GetAkaScoreForReports(String GroupID, String resIDs) {
+        try {
+            Cursor cursor;
+            database = getWritableDatabase();
+            cursor = database.rawQuery("select SUM(ScoredMarks) as ScoredMarks, SUM(TotalMarks) as TotalMarks from Scores where GroupID = '" + GroupID + "' and ResourceID in (" + resIDs + ")", null);
             return PopulateGroupScoresFromCursor(cursor);
 
         } catch (Exception ex) {

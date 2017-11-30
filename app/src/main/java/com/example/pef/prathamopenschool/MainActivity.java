@@ -87,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
     String QueId, Question, QuestionType, Subject, Option1, Option2, Option3, Option4, Answer, resourceType, resourcePath, programLanguage;
     String aajKaSawaalStartTime;
     String selectedOption = "";
+    int selectedBtn;
 
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -104,8 +105,6 @@ public class MainActivity extends AppCompatActivity {
         String aajKaSawalPlayed = i.getStringExtra("aajKaSawalPlayed");
 
         // Decide the next screen depending on aajKaSawalPlayed status
-        // Flag Played if Submit
-
         // Aaj Ka Sawaal Played
         if (aajKaSawalPlayed != null && aajKaSawalPlayed.equals("1")) {
             // Do nothing
@@ -113,262 +112,322 @@ public class MainActivity extends AppCompatActivity {
         // Aaj Ka Sawaal NOT Played
         else if (aajKaSawalPlayed != null && aajKaSawalPlayed.equals("0")) {
 
-            // Play Aaj Ka Sawaal
-
-            // Update updateTrailerCountbyGroupID to 1 if played
-            StatusDBHelper updateTrailerCount = new StatusDBHelper(MainActivity.this);
-            updateTrailerCount.updateTrailerCountbyGroupID(1, selectedGroupId);
-            BackupDatabase.backup(MainActivity.this);
-
-            final MediaPlayer correct = MediaPlayer.create(MainActivity.this, R.raw.correct);
-            final MediaPlayer wrong = MediaPlayer.create(MainActivity.this, R.raw.wrong);
-
-            final Dialog resultDialog = new Dialog(MainActivity.this);
-            final Dialog dialog = new Dialog(MainActivity.this);
-
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.setContentView(R.layout.sample_aajkasawaal);
-            dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
-
-
-            LinearLayout mainScreen = dialog.findViewById(R.id.sampleAajkaSawaal);
-            LinearLayout correctScreen = dialog.findViewById(R.id.aajkaSawaal_correct);
-            LinearLayout wrongScreen = dialog.findViewById(R.id.aajkaSawaal_wrong);
-
-            mainScreen.setVisibility(View.VISIBLE);
-            correctScreen.setVisibility(View.GONE);
-            wrongScreen.setVisibility(View.GONE);
-
-            // Memory Allocation
-            tv_Que = dialog.findViewById(R.id.tv_question);
-            //tv_result = dialog.findViewById(R.id.tv_result);
-
-            btn_Submit = dialog.findViewById(R.id.btn_submit);
-            btn_Skip = dialog.findViewById(R.id.btn_skip);
-
-            tv_opt1 = dialog.findViewById(R.id.opt1);
-            tv_opt2 = dialog.findViewById(R.id.opt2);
-            tv_opt3 = dialog.findViewById(R.id.opt3);
-            tv_opt4 = dialog.findViewById(R.id.opt4);
-
-
-            dialog.setCanceledOnTouchOutside(false);
-            dialog.setCancelable(false);
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-            dialog.show();
-
-
-            // Set the Question & Options from json
             try {
 
-                aajKaSawaalStartTime = Util.GetCurrentDateTime();
-                // Load Json in Array
-                JSONArray queJsonArray = new JSONArray(loadQueJSONFromAsset());
+                // Play Aaj Ka Sawaal
 
-                // Generate Random Que No
-                Random r = new Random();
-                int Low = 0;
-                int High = queJsonArray.length();
-                int randomQuestion = r.nextInt(High - Low) + Low;
+                // Update updateTrailerCountbyGroupID to 1 if played
+                StatusDBHelper updateTrailerCount = new StatusDBHelper(MainActivity.this);
+                updateTrailerCount.updateTrailerCountbyGroupID(1, selectedGroupId);
+                BackupDatabase.backup(MainActivity.this);
 
-                // Get Question Details
-                JSONObject qObj = queJsonArray.getJSONObject(randomQuestion);
-                QueId = qObj.getString("QueId");
-                Question = qObj.getString("Question");
-                QuestionType = qObj.getString("QuestionType");
-                Subject = qObj.getString("Subject");
-                Option1 = qObj.getString("Option1");
-                Option2 = qObj.getString("Option2");
-                Option3 = qObj.getString("Option3");
-                Option4 = qObj.getString("Option4");
-                Answer = qObj.getString("Answer");
-                resourceId = qObj.getString("resourceId");
-                resourceType = qObj.getString("resourceType");
-                resourcePath = qObj.getString("resourcePath");
-                programLanguage = qObj.getString("programLanguage");
+                // MediaPlayer Memory Allocation
+                final MediaPlayer correct = MediaPlayer.create(MainActivity.this, R.raw.correct);
+                final MediaPlayer wrong = MediaPlayer.create(MainActivity.this, R.raw.wrong);
+                // Dialog Memory Allocation
+                final Dialog resultDialog = new Dialog(MainActivity.this);
+                final Dialog dialog = new Dialog(MainActivity.this);
 
-                // Set Question
-                tv_Que.setText(Question);
-                tv_opt1.setText(Option1);
-                tv_opt2.setText(Option2);
-                tv_opt3.setText(Option3);
-                tv_opt4.setText(Option4);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(R.layout.sample_aajkasawaal);
+                dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+
+                // Layout Memory Allocation
+                LinearLayout mainScreen = dialog.findViewById(R.id.sampleAajkaSawaal);
+                LinearLayout correctScreen = dialog.findViewById(R.id.aajkaSawaal_correct);
+                LinearLayout wrongScreen = dialog.findViewById(R.id.aajkaSawaal_wrong);
+
+                // Layout Appearance
+                mainScreen.setVisibility(View.VISIBLE);
+                correctScreen.setVisibility(View.GONE);
+                wrongScreen.setVisibility(View.GONE);
+
+                // Memory Allocation
+                tv_Que = dialog.findViewById(R.id.tv_question);
+                //tv_result = dialog.findViewById(R.id.tv_result);
+                btn_Submit = dialog.findViewById(R.id.btn_submit);
+                btn_Skip = dialog.findViewById(R.id.btn_skip);
+                tv_opt1 = dialog.findViewById(R.id.opt1);
+                tv_opt2 = dialog.findViewById(R.id.opt2);
+                tv_opt3 = dialog.findViewById(R.id.opt3);
+                tv_opt4 = dialog.findViewById(R.id.opt4);
+
+                btn_Submit.setClickable(false);
+
+                // Setting Dialog
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.setCancelable(false);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                dialog.show();
 
 
-            } catch (Exception e) {
-                e.getMessage();
-            }
+                // Set the Question & Options from json
+                try {
 
-            tv_opt1.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+                    aajKaSawaalStartTime = Util.GetCurrentDateTime();
+                    // Load Json in Array
+                    JSONArray subJsonArray = loadQueJSONFromAsset();
 
-                    tv_opt1.setBackgroundResource(R.drawable.ans_box_left_selected);
-                    tv_opt2.setBackgroundResource(R.drawable.ans_box_right);
-                    tv_opt3.setBackgroundResource(R.drawable.ans_box_left);
-                    tv_opt4.setBackgroundResource(R.drawable.ans_box_right);
+                    // Generate Random Subject No
+                    Random rS = new Random();
+                    int sLow = 0;
+                    int sHigh = subJsonArray.length();
+                    int randomSubject = rS.nextInt(sHigh - sLow) + sLow;
 
-                    selectedOption = tv_opt1.getText().toString();
+                    JSONObject sObj = subJsonArray.getJSONObject(randomSubject);
+                    JSONArray queJsonArray = sObj.getJSONArray("nodelist");
 
+                    // Generate Random Que No
+                    Random rQ = new Random();
+                    int Low = 0;
+                    int High = queJsonArray.length();
+                    int randomQuestion = rQ.nextInt(High - Low) + Low;
+
+                    // Get Random Question Details
+                    JSONObject qObj = queJsonArray.getJSONObject(randomQuestion);
+                    QueId = qObj.getString("QueId");
+                    Question = qObj.getString("Question");
+                    QuestionType = qObj.getString("QuestionType");
+                    Option1 = qObj.getString("Option1");
+                    Option2 = qObj.getString("Option2");
+                    Option3 = qObj.getString("Option3");
+                    Option4 = qObj.getString("Option4");
+                    Answer = qObj.getString("Answer");
+                    resourceId = qObj.getString("resourceId");
+                    resourceType = qObj.getString("resourceType");
+                    resourcePath = qObj.getString("resourcePath");
+
+                    // Set Question
+                    tv_Que.setText(Question);
+                    tv_opt1.setText(Option1);
+                    tv_opt2.setText(Option2);
+                    tv_opt3.setText(Option3);
+                    tv_opt4.setText(Option4);
+
+
+                } catch (Exception e) {
+                    e.getMessage();
                 }
-            });
-            tv_opt2.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    tv_opt1.setBackgroundResource(R.drawable.ans_box_left);
-                    tv_opt2.setBackgroundResource(R.drawable.ans_box_right_selected);
-                    tv_opt3.setBackgroundResource(R.drawable.ans_box_left);
-                    tv_opt4.setBackgroundResource(R.drawable.ans_box_right);
 
-                    selectedOption = tv_opt2.getText().toString();
+                tv_opt1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
 
+                        btn_Submit.setClickable(true);
 
-                }
-            });
-            tv_opt3.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    tv_opt1.setBackgroundResource(R.drawable.ans_box_left);
-                    tv_opt2.setBackgroundResource(R.drawable.ans_box_right);
-                    tv_opt3.setBackgroundResource(R.drawable.ans_box_left_selected);
-                    tv_opt4.setBackgroundResource(R.drawable.ans_box_right);
+                        tv_opt1.setBackgroundResource(R.drawable.ans_box_left_selected);
+                        tv_opt2.setBackgroundResource(R.drawable.ans_box_right);
+                        tv_opt3.setBackgroundResource(R.drawable.ans_box_left);
+                        tv_opt4.setBackgroundResource(R.drawable.ans_box_right);
 
-                    selectedOption = tv_opt3.getText().toString();
-
-                }
-            });
-            tv_opt4.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    tv_opt1.setBackgroundResource(R.drawable.ans_box_left);
-                    tv_opt2.setBackgroundResource(R.drawable.ans_box_right);
-                    tv_opt3.setBackgroundResource(R.drawable.ans_box_left);
-                    tv_opt4.setBackgroundResource(R.drawable.ans_box_right_selected);
-
-                    selectedOption = tv_opt4.getText().toString();
-
-                }
-            });
-
-
-            // Skip Button Action
-            btn_Skip.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dialog.dismiss();
-                }
-            });
-
-            // Submit Button Action
-            btn_Submit.setOnClickListener(new View.OnClickListener()
-
-            {
-                @Override
-                public void onClick(View v) {
-
-                    // Flag Played if Submit
-                    StatusDBHelper sdbh = new StatusDBHelper(MainActivity.this);
-                    sdbh.UpdateAlarm("aajKaSawalPlayed", "1");
-                    BackupDatabase.backup(MainActivity.this);
-
-                    // Score Table Entry
-                    boolean enterScore = false;
-                    ScoreDBHelper score = new ScoreDBHelper(MainActivity.this);
-                    Score sc = new Score();
-
-                    // Disable buttons after selection
-                    btn_Submit.setClickable(false);
-                    btn_Skip.setClickable(false);
-
-                    boolean answer = false;
-                    sc.SessionID = MultiPhotoSelectActivity.sessionId;
-                    sc.ResourceID = resourceId;
-                    sc.QuestionId = Integer.parseInt(QueId);
-                    sc.TotalMarks = 10;
-                    sc.Level = 99;
-                    sc.StartTime = aajKaSawaalStartTime;
-                    sc.EndTime = Util.GetCurrentDateTime();
-                    String gid;
-                    gid = MultiPhotoSelectActivity.selectedGroupId;
-                    if (gid.contains(","))
-                        gid = gid.split(",")[0];
-                    sc.GroupID = gid;
-                    String deviceId = Settings.Secure.getString(MainActivity.this.getContentResolver(), Settings.Secure.ANDROID_ID);
-                    sc.DeviceID = deviceId.equals(null) ? "0000" : deviceId;
-
-                    // get selected textview
-                    if (selectedOption.equals(Answer)) {
-                        // CORRECT ANSWER
-                        resultDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                        resultDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
-                        resultDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-                        resultDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                        resultDialog.setContentView(getLayoutInflater().inflate(R.layout.sample_aajkasawaal, null));
-
-                        LinearLayout mainScreen = resultDialog.findViewById(R.id.sampleAajkaSawaal);
-                        LinearLayout correctScreen = resultDialog.findViewById(R.id.aajkaSawaal_correct);
-                        LinearLayout wrongScreen = resultDialog.findViewById(R.id.aajkaSawaal_wrong);
-
-                        mainScreen.setVisibility(View.GONE);
-                        correctScreen.setVisibility(View.VISIBLE);
-                        wrongScreen.setVisibility(View.GONE);
-
-                        resultDialog.show();
-
-                        correct.start();
-                        sc.ScoredMarks = 10;
-
-                    } else if (answer == false) {
-                        // if WRONG ANS
-                        resultDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                        resultDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
-                        resultDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-                        resultDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                        resultDialog.setContentView(getLayoutInflater().inflate(R.layout.sample_aajkasawaal, null));
-
-                        LinearLayout mainScreen = resultDialog.findViewById(R.id.sampleAajkaSawaal);
-                        LinearLayout correctScreen = resultDialog.findViewById(R.id.aajkaSawaal_correct);
-                        LinearLayout wrongScreen = resultDialog.findViewById(R.id.aajkaSawaal_wrong);
-
-                        TextView tvWrong = resultDialog.findViewById(R.id.tv_wrong_ans);
-                        tvWrong.setText("Correct Answer is " + Answer + " !!!");
-
-                        mainScreen.setVisibility(View.GONE);
-                        correctScreen.setVisibility(View.GONE);
-                        wrongScreen.setVisibility(View.VISIBLE);
-
-                        resultDialog.show();
-
-                        wrong.start();
-
-                        sc.ScoredMarks = 0;
+                        selectedOption = tv_opt1.getText().toString();
+                        selectedBtn = R.id.opt1;
 
                     }
-                    enterScore = score.Add(sc);
-                    BackupDatabase.backup(MainActivity.this);
+                });
+                tv_opt2.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
 
-                    final Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            //Do something after 2500ms
-                            if (correct.isPlaying()) {
-                                correct.stop();
-                                correct.reset();
-                                correct.release();
-                            } else if (wrong.isPlaying()) {
-                                wrong.stop();
-                                wrong.reset();
-                                wrong.release();
-                            }
-                            resultDialog.dismiss();
-                            dialog.dismiss();
+                        btn_Submit.setClickable(true);
+
+                        tv_opt1.setBackgroundResource(R.drawable.ans_box_left);
+                        tv_opt2.setBackgroundResource(R.drawable.ans_box_right_selected);
+                        tv_opt3.setBackgroundResource(R.drawable.ans_box_left);
+                        tv_opt4.setBackgroundResource(R.drawable.ans_box_right);
+
+                        selectedOption = tv_opt2.getText().toString();
+                        selectedBtn = R.id.opt2;
+
+                    }
+                });
+                tv_opt3.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        btn_Submit.setClickable(true);
+
+                        tv_opt1.setBackgroundResource(R.drawable.ans_box_left);
+                        tv_opt2.setBackgroundResource(R.drawable.ans_box_right);
+                        tv_opt3.setBackgroundResource(R.drawable.ans_box_left_selected);
+                        tv_opt4.setBackgroundResource(R.drawable.ans_box_right);
+
+                        selectedOption = tv_opt3.getText().toString();
+                        selectedBtn = R.id.opt3;
+
+                    }
+                });
+                tv_opt4.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        btn_Submit.setClickable(true);
+
+                        tv_opt1.setBackgroundResource(R.drawable.ans_box_left);
+                        tv_opt2.setBackgroundResource(R.drawable.ans_box_right);
+                        tv_opt3.setBackgroundResource(R.drawable.ans_box_left);
+                        tv_opt4.setBackgroundResource(R.drawable.ans_box_right_selected);
+
+                        selectedOption = tv_opt4.getText().toString();
+                        selectedBtn = R.id.opt4;
+
+                    }
+                });
+
+
+                // Skip Button Action
+                btn_Skip.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+
+                        // Open Graph Activity
+                        Intent graph = new Intent(MainActivity.this, AKSGraph.class);
+                        startActivity(graph);
+
+                    }
+                });
+
+                // Submit Button Action
+                btn_Submit.setOnClickListener(new View.OnClickListener()
+
+                {
+                    @Override
+                    public void onClick(View v) {
+
+                        // Flag Played if Submit
+                        StatusDBHelper sdbh = new StatusDBHelper(MainActivity.this);
+                        sdbh.UpdateAlarm("aajKaSawalPlayed", "1");
+                        BackupDatabase.backup(MainActivity.this);
+
+                        // Score Table Entry
+                        boolean enterScore = false;
+                        ScoreDBHelper score = new ScoreDBHelper(MainActivity.this);
+                        Score sc = new Score();
+
+                        // Disable buttons after selection
+                        btn_Submit.setClickable(false);
+                        btn_Skip.setClickable(false);
+
+                        boolean answer = false;
+                        sc.SessionID = MultiPhotoSelectActivity.sessionId;
+                        sc.ResourceID = resourceId;
+                        sc.QuestionId = Integer.parseInt(QueId);
+                        sc.TotalMarks = 10;
+                        sc.Level = 99;
+                        sc.StartTime = aajKaSawaalStartTime;
+                        sc.EndTime = Util.GetCurrentDateTime();
+                        String gid;
+                        gid = MultiPhotoSelectActivity.selectedGroupId;
+                        if (gid.contains(","))
+                            gid = gid.split(",")[0];
+                        sc.GroupID = gid;
+                        String deviceId = Settings.Secure.getString(MainActivity.this.getContentResolver(), Settings.Secure.ANDROID_ID);
+                        sc.DeviceID = deviceId.equals(null) ? "0000" : deviceId;
+
+                        // get selected textview
+                        if (selectedOption.equals(Answer)) {
+                            // Correct Animation
+                            Button selBut = dialog.findViewById(selectedBtn);
+                            selBut.setBackgroundResource(R.drawable.ans_box_correct);
+
+                            // CORRECT ANSWER
+                            resultDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                            resultDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+                            resultDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+                            resultDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                            resultDialog.setContentView(getLayoutInflater().inflate(R.layout.sample_aajkasawaal, null));
+
+                            LinearLayout mainScreen = resultDialog.findViewById(R.id.sampleAajkaSawaal);
+                            LinearLayout correctScreen = resultDialog.findViewById(R.id.aajkaSawaal_correct);
+                            LinearLayout wrongScreen = resultDialog.findViewById(R.id.aajkaSawaal_wrong);
+
+                            mainScreen.setVisibility(View.GONE);
+                            correctScreen.setVisibility(View.VISIBLE);
+                            wrongScreen.setVisibility(View.GONE);
+
+                            resultDialog.show();
+
+                            correct.start();
+                            sc.ScoredMarks = 10;
+
+                        } else if (answer == false) {
+
+                            // setting background red if answer is wrong
+                            Button selBut = dialog.findViewById(selectedBtn);
+                            selBut.setBackgroundResource(R.drawable.ans_box_wrong);
+
+                            // Setting Correct Answer background
+                            if (tv_opt1.getText().toString().equals(Answer))
+                                tv_opt1.setBackgroundResource(R.drawable.ans_box_correct);
+                            else if (tv_opt2.getText().toString().equals(Answer))
+                                tv_opt2.setBackgroundResource(R.drawable.ans_box_correct);
+                            else if (tv_opt3.getText().toString().equals(Answer))
+                                tv_opt3.setBackgroundResource(R.drawable.ans_box_correct);
+                            else if (tv_opt4.getText().toString().equals(Answer))
+                                tv_opt4.setBackgroundResource(R.drawable.ans_box_correct);
+
+
+                            // if WRONG ANS
+                            resultDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                            resultDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+                            resultDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+                            resultDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                            resultDialog.setContentView(getLayoutInflater().inflate(R.layout.sample_aajkasawaal, null));
+
+                            LinearLayout mainScreen = resultDialog.findViewById(R.id.sampleAajkaSawaal);
+                            LinearLayout correctScreen = resultDialog.findViewById(R.id.aajkaSawaal_correct);
+                            LinearLayout wrongScreen = resultDialog.findViewById(R.id.aajkaSawaal_wrong);
+
+                            TextView tvWrong = resultDialog.findViewById(R.id.tv_wrong_ans);
+                            tvWrong.setText("Correct Answer is " + Answer + " !!!");
+
+                            mainScreen.setVisibility(View.GONE);
+                            correctScreen.setVisibility(View.GONE);
+                            wrongScreen.setVisibility(View.VISIBLE);
+
+                            resultDialog.show();
+
+                            wrong.start();
+
+                            sc.ScoredMarks = 0;
+
                         }
-                    }, 5000);
+                        enterScore = score.Add(sc);
+                        BackupDatabase.backup(MainActivity.this);
 
-                }
-            });
+                        final Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                //Do something after 2500ms
+                                if (correct.isPlaying()) {
+                                    correct.stop();
+                                    correct.reset();
+                                    correct.release();
+                                } else if (wrong.isPlaying()) {
+                                    wrong.stop();
+                                    wrong.reset();
+                                    wrong.release();
+                                }
+                                resultDialog.dismiss();
+                                dialog.dismiss();
 
+                                // Show Graph Activity
+                                Intent graph = new Intent(MainActivity.this, AKSGraph.class);
+                                startActivity(graph);
+
+
+                            }
+                        }, 5000);
+
+                    }
+
+
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
         }
         // if Questions.json not present
@@ -436,9 +495,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     // Reading CRL Json From Internal Memory
-    public String loadQueJSONFromAsset() {
+    public JSONArray loadQueJSONFromAsset() {
         String queJsonStr = null;
-
+        JSONArray aksNavigate = null;
         try {
             File queJsonSDCard = new File(splashScreenVideo.fpath + "AajKaSawaal/", "Questions.json");
             FileInputStream stream = new FileInputStream(queJsonSDCard);
@@ -446,6 +505,10 @@ public class MainActivity extends AppCompatActivity {
                 FileChannel fc = stream.getChannel();
                 MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
                 queJsonStr = Charset.defaultCharset().decode(bb).toString();
+
+                JSONObject aksObj = new JSONObject(queJsonStr);
+                aksNavigate = aksObj.getJSONArray("nodelist");
+
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -455,7 +518,8 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
         }
 
-        return queJsonStr;
+        return aksNavigate;
+
     }
 
 
@@ -715,6 +779,4 @@ public class MainActivity extends AppCompatActivity {
         destroyed = true;
         super.onDestroy();
     }
-
-
 }
