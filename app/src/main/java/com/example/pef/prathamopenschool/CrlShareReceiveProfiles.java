@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
@@ -256,9 +257,9 @@ public class CrlShareReceiveProfiles extends AppCompatActivity implements Extrac
         //content://com.estrongs.files/storage/emulated/0/SHAREit/files/NewProfiles.zip
         final String ReceivedFileName = recieveProfilePath.replace("content://com.estrongs.files/storage/emulated/0/SHAREit/files/", "");
 
-        if (ReceivedFileName.endsWith("NewProfiles.zip")) {
+        if (recieveProfilePath.endsWith("NewProfiles.zip")) {
 
-            newProfile = new File(recieveProfilePath);
+            new RecieveFiles(TargetPath, recieveProfilePath).execute();
 /*  //Checking if src file exist or not (pravin)
                     newProfile = new File(shareItPath);
                     if (!newProfile.exists()) {
@@ -267,75 +268,42 @@ public class CrlShareReceiveProfiles extends AppCompatActivity implements Extrac
             {
 
 
-                progressDialog.setCancelable(false);
-                progressDialog.setMessage("Receiving Profiles");
-                progressDialog.show();
+//                progressDialog.setCancelable(false);
+//                progressDialog.setMessage("Receiving Profiles");
+//                progressDialog.show();
 
 //                        Thread mThread = new Thread() {
 //                            @Override
 //                            public void run() {
 
-                // Extraction of contents
-                Compress extract = new Compress();
-                ReceivePath = recieveProfilePath.replace("content://com.estrongs.files", "");
 
-                Log.d("ReceivePath :::", ReceivePath);
-                Log.d("TargetPath :::", TargetPath);
+//                CrlShareReceiveProfiles.this.runOnUiThread(new Runnable() {
+//                    public void run() {
+//                        Toast.makeText(c, "Files Received & Updated in Database Successfully !!!", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
 
-                // Exctracting Data
-                List<String> unzippedFileNames = extract.unzip(ReceivePath, TargetPath);
 
-                // Inserting All Jsons in Database
-                try {
-                    UpdateAllJson();
-                    // Error causing here
-                    newProfile.delete();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                CrlShareReceiveProfiles.this.runOnUiThread(new Runnable() {
-                    public void run() {
-                        Toast.makeText(c, "Files Received & Updated in Database Successfully !!!", Toast.LENGTH_SHORT).show();
-                    }
-                });
 
-                // Transfer Student's Profiles from Receive folder to Student Profiles
-                File src = new File(Environment.getExternalStorageDirectory() + "/.POSinternal/ReceivedContent");
-                File dest = new File(Environment.getExternalStorageDirectory() + "/.POSinternal/StudentProfiles");
-                try {
-                    if (!src.exists()) {
-                        //Toast.makeText(c, "No folder exist in Internal Storage to copy", Toast.LENGTH_LONG).show();
-                    } else if (dest.exists()) {
-                        copyDirectory(src, dest);
-                        CrlShareReceiveProfiles.this.runOnUiThread(new Runnable() {
-                            public void run() {
-                                Toast.makeText(c, "Files copied successfully!", Toast.LENGTH_LONG).show();
-                            }
-                        });
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+//                progressDialog.dismiss();
 
-                progressDialog.dismiss();
-
-                CrlShareReceiveProfiles.this.runOnUiThread(new Runnable() {
-                    public void run() {
-
-                        // Display Count
-                        tv_Students.setVisibility(View.VISIBLE);
-                        tv_Crls.setVisibility(View.VISIBLE);
-                        tv_Groups.setVisibility(View.VISIBLE);
-                        int crl = crlJsonArray == null ? 0 : crlJsonArray.length();
-                        int std = studentsJsonArray == null ? 0 : studentsJsonArray.length();
-                        int grp = grpJsonArray == null ? 0 : grpJsonArray.length();
-                        tv_Students.setText("Students Received : " + std);
-                        tv_Crls.setText("CRLs Received : " + crl);
-                        tv_Groups.setText("Groups Received : " + grp);
-
-                        Toast.makeText(c, "Profiles received", Toast.LENGTH_LONG).show();
-                    }
-                });
+//                CrlShareReceiveProfiles.this.runOnUiThread(new Runnable() {
+//                    public void run() {
+//
+//                         Display Count
+//                        tv_Students.setVisibility(View.VISIBLE);
+//                        tv_Crls.setVisibility(View.VISIBLE);
+//                        tv_Groups.setVisibility(View.VISIBLE);
+//                        int crl = crlJsonArray == null ? 0 : crlJsonArray.length();
+//                        int std = studentsJsonArray == null ? 0 : studentsJsonArray.length();
+//                        int grp = grpJsonArray == null ? 0 : grpJsonArray.length();
+//                        tv_Students.setText("Students Received : " + std);
+//                        tv_Crls.setText("CRLs Received : " + crl);
+//                        tv_Groups.setText("Groups Received : " + grp);
+//
+//                        Toast.makeText(c, "Profiles received", Toast.LENGTH_LONG).show();
+//                    }
+//                });
 //                            }
 //                        };
 //                        mThread.start();
@@ -1240,4 +1208,87 @@ public class CrlShareReceiveProfiles extends AppCompatActivity implements Extrac
         }
     }
 
+    public class RecieveFiles extends AsyncTask<Void, Integer, String> {
+
+//        String targetPath;
+        String recieveProfilePath;
+        ProgressDialog dialog;
+
+        public RecieveFiles(String targetPath, String recieveProfilePath) {
+//            this.targetPath = targetPath;
+            this.recieveProfilePath = recieveProfilePath;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            dialog=new ProgressDialog(CrlShareReceiveProfiles.this);
+            dialog.setMessage("Receiving Profiles");
+            dialog.setCanceledOnTouchOutside(false);
+            dialog.setCancelable(false);
+            dialog.show();
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            // Extraction of contents
+            newProfile = new File(recieveProfilePath);
+            Compress extract = new Compress();
+            ReceivePath = recieveProfilePath.replace("content://com.estrongs.files", "");
+
+            Log.d("ReceivePath :::", ReceivePath);
+            Log.d("TargetPath :::", TargetPath);
+
+            // Exctracting Data
+            List<String> unzippedFileNames = extract.unzip(ReceivePath, TargetPath);
+
+            // Inserting All Jsons in Database
+            try {
+                UpdateAllJson();
+                // Error causing here
+                newProfile.delete();
+                // Transfer Student's Profiles from Receive folder to Student Profiles
+                File src = new File(Environment.getExternalStorageDirectory() + "/.POSinternal/ReceivedContent");
+                File dest = new File(Environment.getExternalStorageDirectory() + "/.POSinternal/StudentProfiles");
+                try {
+                    if (!src.exists()) {
+                        //Toast.makeText(c, "No folder exist in Internal Storage to copy", Toast.LENGTH_LONG).show();
+                    } else if (dest.exists()) {
+                        copyDirectory(src, dest);
+//                        CrlShareReceiveProfiles.this.runOnUiThread(new Runnable() {
+//                            public void run() {
+//                                Toast.makeText(c, "Files copied successfully!", Toast.LENGTH_LONG).show();
+//                            }
+//                        });
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return "true";
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if (dialog != null) {
+                dialog.dismiss();
+            }
+
+            Toast.makeText(c, "Files Received & Updated in Database Successfully !!!", Toast.LENGTH_SHORT).show();
+            tv_Students.setVisibility(View.VISIBLE);
+            tv_Crls.setVisibility(View.VISIBLE);
+            tv_Groups.setVisibility(View.VISIBLE);
+            int crl = crlJsonArray == null ? 0 : crlJsonArray.length();
+            int std = studentsJsonArray == null ? 0 : studentsJsonArray.length();
+            int grp = grpJsonArray == null ? 0 : grpJsonArray.length();
+            tv_Students.setText("Students Received : " + std);
+            tv_Crls.setText("CRLs Received : " + crl);
+            tv_Groups.setText("Groups Received : " + grp);
+
+            Toast.makeText(c, "Profiles received", Toast.LENGTH_LONG).show();
+        }
+    }
 }
