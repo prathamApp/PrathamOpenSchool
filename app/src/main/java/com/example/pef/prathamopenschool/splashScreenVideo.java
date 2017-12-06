@@ -122,18 +122,6 @@ public class splashScreenVideo extends AppCompatActivity {
 
         new LongOperation(splashScreenVideo.this, fpath).execute();
 
-
-
-/*
-        splashVideo = (VideoView) findViewById(R.id.videoView2);
-        Play(Uri.parse(fpath + "/Media/videos/splashVideo.mp4"));
-        splashVideo.setOnPreparedListener(this);
-        splashVideo.setOnCompletionListener(this);
-
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-*/
-
-
     }
 
     // Check service is running or not
@@ -161,67 +149,99 @@ public class splashScreenVideo extends AppCompatActivity {
 
 
             try {
-                // Check 'TabLanguage','English'),('AMAlarm','0'),('PMAlarm','0') Entry in DB
-                StatusDBHelper s = new StatusDBHelper(context);
-                boolean valuesAvailable = false;
 
-                valuesAvailable = s.initialDataAvailable("aajKaSawalPlayed");
+                File existingDBExists = new File(Environment.getExternalStorageDirectory() + "/PrathamTabDB.db");
+                File existingPOSinternalExists = new File(Environment.getExternalStorageDirectory() + "/.POSinternal");
 
-                if (valuesAvailable == false) {
-                    s = new StatusDBHelper(context);
-                    s.insertInitialData("TabLanguage", "English");
-//                    s.insertInitialData("AMAlarm", "0"); // Not Necessary Now
-//                    s.insertInitialData("PMAlarm", "0"); // Not Necessary Now
-                    s.insertInitialData("aajKaSawalPlayed", "0");
+                // Both DB & .POSinternal exists
+                if (existingDBExists.exists() && existingPOSinternalExists.exists()) {
+                    // Copy DB file if already exist
+                    RetrieveExistingDatabase.backup(splashScreenVideo.this);
+                    return "true";
                 }
-                // Check if service running if running then dont execute
-//                AlarmManager pm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-//                PendingIntent pd = PendingIntent.getBroadcast(context, 12234, alarmIntentPM, PendingIntent.FLAG_NO_CREATE);
-//                try {
-//                    pm.cancel(pd);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//                boolean serviceRunningStatusPM = isServiceRunning(null);
-//                Log.d("serviceRunning:::",serviceRunningStatusPM+"");
-////                BackupDatabase.backup(context);
-//                if (!serviceRunningStatusPM) {
-//                    // if PM 0 then execute PM Alarm
-//                    // Setting daily notification at 04 PM
-                setPMAlarm();
-//                    /*// update Alarm value to true
-//                    StatusDBHelper sdbh = new StatusDBHelper(context);
-//                    sdbh.UpdateAlarm("PMAlarm", "1");
-//                    BackupDatabase.backup(context);*/
-//                }
 
-                // Auto Copy Data from External to Internal Storage
-                String SourcePath = path + "toCopy/";
-                File sourceDir = new File(SourcePath);
-                String TargetPath = Environment.getExternalStorageDirectory().toString();
-                File targetDir = new File(TargetPath);
-                File checkDir = new File(TargetPath + "/.POSinternal");
-                if (!sourceDir.exists()) {
-                    Toast.makeText(c, "There is no Data for Application in external storage exist", Toast.LENGTH_LONG).show();
-                    return "false";
-                } else {
-                    if (!checkDir.exists()) {
-                        try {
-                            // Only executed on first time
-                            // Copy Initial Data
-                            copyDirectory(sourceDir, targetDir);
+                // DB exists & .POSinternal not exists
+                else if (existingDBExists.exists() && !existingPOSinternalExists.exists()) {
+                    // Copy DB file if already exist
+                    RetrieveExistingDatabase.backup(splashScreenVideo.this);
 
-                            return "true";
-
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            return "false";
-                        }
+                    // Auto Copy Data from External to Internal Storage
+                    String SourcePath = path + "toCopy/";
+                    File sourceDir = new File(SourcePath);
+                    String TargetPath = Environment.getExternalStorageDirectory().toString();
+                    File targetDir = new File(TargetPath);
+                    File checkDir = new File(TargetPath + "/.POSinternal");
+                    if (!sourceDir.exists()) {
+                        Toast.makeText(c, "There is no Data for Application in external storage exist", Toast.LENGTH_LONG).show();
+                        return "false";
                     } else {
-                        // Alarm Notification is Set
-                        return "true";
+                        if (!checkDir.exists()) {
+                            try {
+                                // Only executed on first time
+                                // Copy Initial Data
+                                copyDirectory(sourceDir, targetDir);
+
+                                return "true";
+
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                return "false";
+                            }
+                        } else {
+                            // Alarm Notification is Set
+                            return "true";
+                        }
+                    }
+
+                }
+
+                // Both DB & POSinternal not exists
+                else {
+                    // New Installation
+
+                    // Check 'TabLanguage','English'),('AMAlarm','0'),('PMAlarm','0') Entry in DB
+                    StatusDBHelper s = new StatusDBHelper(context);
+                    boolean valuesAvailable = false;
+
+                    valuesAvailable = s.initialDataAvailable("aajKaSawalPlayed");
+
+                    if (valuesAvailable == false) {
+                        s = new StatusDBHelper(context);
+                        s.insertInitialData("TabLanguage", "English");
+                        s.insertInitialData("aajKaSawalPlayed", "0");
+                    }
+
+                    setPMAlarm();
+
+                    // Auto Copy Data from External to Internal Storage
+                    String SourcePath = path + "toCopy/";
+                    File sourceDir = new File(SourcePath);
+                    String TargetPath = Environment.getExternalStorageDirectory().toString();
+                    File targetDir = new File(TargetPath);
+                    File checkDir = new File(TargetPath + "/.POSinternal");
+                    if (!sourceDir.exists()) {
+                        Toast.makeText(c, "There is no Data for Application in external storage exist", Toast.LENGTH_LONG).show();
+                        return "false";
+                    } else {
+                        if (!checkDir.exists()) {
+                            try {
+                                // Only executed on first time
+                                // Copy Initial Data
+                                copyDirectory(sourceDir, targetDir);
+
+                                return "true";
+
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                return "false";
+                            }
+                        } else {
+                            // Alarm Notification is Set
+                            return "true";
+                        }
                     }
                 }
+
             } catch (Exception e) {
                 e.printStackTrace();
                 return "false";

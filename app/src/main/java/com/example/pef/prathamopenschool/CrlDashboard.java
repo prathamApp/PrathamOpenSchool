@@ -48,7 +48,7 @@ public class CrlDashboard extends AppCompatActivity {
 
         try {
             PackageInfo pInfo = this.getPackageManager().getPackageInfo(getPackageName(), 0);
-            int verCode = pInfo.versionCode;
+            String verCode = pInfo.versionName;
             tv_version_code.setText(String.valueOf(verCode));
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
