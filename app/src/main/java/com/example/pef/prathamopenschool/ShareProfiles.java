@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -12,6 +11,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -25,6 +25,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -118,43 +120,70 @@ public class ShareProfiles extends AppCompatActivity {
 
     // Function to fetch Photos filtered by Student ID
     public ArrayList<String> fetchStudentProfiles() {
-
-        Students = sdb.GetAllNewStudents();
-        String stdID = "";
-
         ArrayList<String> imageUrls = new ArrayList<String>();
 
-        Uri EXTERNAL = MediaStore.Files.getContentUri("external");
-
-        File folder = new File(Environment.getExternalStorageDirectory() + "/.POSinternal/StudentProfiles");
-        if (folder.exists()) {
-            Cursor imagecursor = getContentResolver().query(EXTERNAL,
-                    null,
-                    MediaStore.Images.Media.DATA + " like ? ",
-                    new String[]{"%StudentProfiles%"},
-                    null);
+        try {
+            Students = sdb.GetAllNewStudents();
+            String stdID = "";
 
 
-            String fileNameWithExtension = "";//default fileName
-            Uri filePathUri;
-            for (int i = 1; i < imagecursor.getCount(); i++) {
-                imagecursor.moveToPosition(i);
-                int dataColumnIndex = imagecursor.getColumnIndex(MediaStore.Images.Media.DATA);
-                filePathUri = Uri.parse(imagecursor.getString(dataColumnIndex));
-                fileNameWithExtension = filePathUri.getLastPathSegment().toString();
-                String[] fileName = fileNameWithExtension.split("\\.");
+            Uri EXTERNAL = MediaStore.Files.getContentUri("external");
 
-                for (int j = 0; j < Students.size(); j++) {
-                    stdID = String.valueOf(Students.get(j).StudentID);
-                    if (fileName[0].equals(stdID)) {
-                        imageUrls.add(imagecursor.getString(dataColumnIndex));
+            File folder = new File(Environment.getExternalStorageDirectory() + "/.POSinternal/StudentProfiles");
+            File[] listFile;
+            if (folder.isDirectory()) {
+                listFile = folder.listFiles();
+                for (int i = 0; i < listFile.length; i++) {
+                    Uri uri = Uri.fromFile(listFile[i]);
+                    String fileNameWithExtension = uri.getLastPathSegment();
+                    String[] fileName = fileNameWithExtension.split("\\.");
+                    Log.d("img_file_name::", listFile[i].getAbsolutePath());
+
+                    for (int j = 0; j < Students.size(); j++) {
+                        stdID = String.valueOf(Students.get(j).StudentID);
+                        if (fileName[0].equals(stdID)) {
+                            imageUrls.add(String.valueOf(uri));
+                            break;
+                        }
                     }
                 }
             }
-            return imageUrls;
-        } else {
-            return null;
+            Log.d("img_file_size::", ""+imageUrls.size());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return imageUrls;
+
+//        if (folder.exists()) {
+//            Cursor imagecursor = getContentResolver().query(EXTERNAL,
+//                    null,
+//                    MediaStore.Images.Media.DATA + " like ? ",
+//                    new String[]{"%StudentProfiles%"},
+//                    null);
+//
+//
+//            String fileNameWithExtension = "";//default fileName
+//            Uri filePathUri;
+//            for (int i = 1; i < imagecursor.getCount(); i++) {
+//                String imgName = imagecursor.getColumnName(i);
+//                int imgCount = imagecursor.getCount();
+//                imagecursor.moveToPosition(i);
+//                int dataColumnIndex = imagecursor.getColumnIndex(MediaStore.Images.Media.DATA);
+//                filePathUri = Uri.parse(imagecursor.getString(dataColumnIndex));
+//                fileNameWithExtension = filePathUri.getLastPathSegment().toString();
+//                String[] fileName = fileNameWithExtension.split("\\.");
+//
+//                for (int j = 0; j < Students.size(); j++) {
+//                    stdID = String.valueOf(Students.get(j).StudentID);
+//                    if (fileName[0].equals(stdID)) {
+//                        imageUrls.add(imagecursor.getString(dataColumnIndex));
+//                    }
+//                }
+//            }
+//            return imageUrls;
+//        } else {
+//        return null;
+//        }
     }
 
 
@@ -238,20 +267,24 @@ public class ShareProfiles extends AppCompatActivity {
     public void fileCopyFunction(String fileName) throws IOException {
 
 
-        File sourceFile = new File(fileName);
-        File destinationFile = new File(Environment.getExternalStorageDirectory() + "/.POSinternal/sharableContent/" + sourceFile.getName());
-        path.add(destinationFile.getPath());
+        try {
+            File sourceFile = new File(new URI(fileName));
+            File destinationFile = new File(Environment.getExternalStorageDirectory() + "/.POSinternal/sharableContent/" + sourceFile.getName());
+            path.add(destinationFile.getPath());
 
-        FileInputStream fileInputStream = new FileInputStream(sourceFile);
-        FileOutputStream fileOutputStream = new FileOutputStream(destinationFile);
+            FileInputStream fileInputStream = new FileInputStream(sourceFile);
+            FileOutputStream fileOutputStream = new FileOutputStream(destinationFile);
 
-        int bufferSize;
-        byte[] bufffer = new byte[512];
-        while ((bufferSize = fileInputStream.read(bufffer)) > 0) {
-            fileOutputStream.write(bufffer, 0, bufferSize);
+            int bufferSize;
+            byte[] bufffer = new byte[512];
+            while ((bufferSize = fileInputStream.read(bufffer)) > 0) {
+                fileOutputStream.write(bufffer, 0, bufferSize);
+            }
+            fileInputStream.close();
+            fileOutputStream.close();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
         }
-        fileInputStream.close();
-        fileOutputStream.close();
 
     }
 
@@ -522,9 +555,9 @@ public class ShareProfiles extends AppCompatActivity {
             int std = Students.size();
             int crl = Crls.size();
             int grp = Groups.size();
-            tv_Students.setText("Students Shared : "+std);
-            tv_Crls.setText("CRLs Shared : " +crl);
-            tv_Groups.setText("Groups Shared : "+grp);
+            tv_Students.setText("Students Shared : " + std);
+            tv_Crls.setText("CRLs Shared : " + crl);
+            tv_Groups.setText("Groups Shared : " + grp);
 //                    }
 //                }
         } else
