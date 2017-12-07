@@ -181,6 +181,7 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
                         rb.setWidth(135);
                         rb.setTextSize(16);
 
+                        // For HL
                         if (MultiPhotoSelectActivity.programID.equals("1") || MultiPhotoSelectActivity.programID.equals("3") || MultiPhotoSelectActivity.programID.equals("4")) {
                             rb.setBackgroundResource(R.drawable.groups);
                         } else if (MultiPhotoSelectActivity.programID.equals("2")) {
@@ -312,6 +313,7 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
         Attendance attendance = null;
         AttendanceDBHelper attendanceDBHelper = new AttendanceDBHelper(this);
 
+        // If no student present in RI
         if (programID.equals("2") && students.get(0).length() == 0) {
             presentStudents = new String[1];
             presentStudents[0] = "RI";
@@ -339,7 +341,7 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
 
                 // Fetch records
                 StatusDBHelper sdbh = new StatusDBHelper(sessionContex);
-                List<String> AKSRecords = sdbh.getAKSRecordsOfSelectedGroup(selectedGroupId);
+                List<String> AKSRecords = sdbh.getAKSRecordsOfSelectedGroup(currentlySelectedGroup);
 
                 // Loop to get Aaj Ka Sawaal Played Status
                 if (!AKSRecords.equals(null)) {
@@ -372,7 +374,7 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                if (checkQJson.equals(null)){
+                if (checkQJson.equals(null)) {
                     aajKaSawalPlayed = 3;
                 }
 
@@ -429,7 +431,10 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else {
+        }
+
+        // Atleast one student is present in group/ unit
+        else {
             ArrayList<JSONObject> selectedItems = imageAdapter.getCheckedItems();
             if (selectedItems.size() > 0) {
 
@@ -467,7 +472,7 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
 
                 // Fetch records
                 StatusDBHelper sdbh = new StatusDBHelper(sessionContex);
-                List<String> AKSRecords = sdbh.getAKSRecordsOfSelectedGroup(selectedGroupId);
+                List<String> AKSRecords = sdbh.getAKSRecordsOfSelectedGroup(currentlySelectedGroup);
 
                 // Loop to get Aaj Ka Sawaal Played Status
                 if (!AKSRecords.equals(null)) {
@@ -496,11 +501,11 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
                 // if Questions.json not present
                 JSONArray queJsonArray = null;
                 try {
-                    queJsonArray = new JSONArray(loadQueJSONFromAsset());
+                    checkQJson = loadQueJSONFromAsset();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                if (queJsonArray == null) {
+                if (checkQJson.equals(null)) {
                     aajKaSawalPlayed = 3;
                 }
 
