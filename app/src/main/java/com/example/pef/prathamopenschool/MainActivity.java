@@ -128,6 +128,11 @@ public class MainActivity extends AppCompatActivity {
                 final Dialog resultDialog = new Dialog(MainActivity.this);
                 final Dialog dialog = new Dialog(MainActivity.this);
 
+                resultDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                resultDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+                resultDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+                resultDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setContentView(R.layout.sample_aajkasawaal);
                 dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
@@ -152,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
                 tv_opt3 = dialog.findViewById(R.id.opt3);
                 tv_opt4 = dialog.findViewById(R.id.opt4);
 
+                btn_Submit.setEnabled(false);
                 btn_Submit.setClickable(false);
 
                 // Setting Dialog
@@ -213,6 +219,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
 
+                        btn_Submit.setEnabled(true);
                         btn_Submit.setClickable(true);
 
                         tv_opt1.setBackgroundResource(R.drawable.ans_box_left_selected);
@@ -229,6 +236,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
 
+                        btn_Submit.setEnabled(true);
                         btn_Submit.setClickable(true);
 
                         tv_opt1.setBackgroundResource(R.drawable.ans_box_left);
@@ -245,6 +253,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
 
+                        btn_Submit.setEnabled(true);
                         btn_Submit.setClickable(true);
 
                         tv_opt1.setBackgroundResource(R.drawable.ans_box_left);
@@ -261,6 +270,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
 
+                        btn_Submit.setEnabled(true);
                         btn_Submit.setClickable(true);
 
                         tv_opt1.setBackgroundResource(R.drawable.ans_box_left);
@@ -280,6 +290,21 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         dialog.dismiss();
+
+                        // Disable buttons after selection
+                        btn_Submit.setEnabled(false);
+                        btn_Skip.setEnabled(false);
+                        tv_opt1.setEnabled(false);
+                        tv_opt2.setEnabled(false);
+                        tv_opt3.setEnabled(false);
+                        tv_opt4.setEnabled(false);
+
+                        btn_Submit.setClickable(false);
+                        btn_Skip.setClickable(false);
+                        tv_opt1.setClickable(false);
+                        tv_opt2.setClickable(false);
+                        tv_opt3.setClickable(false);
+                        tv_opt4.setClickable(false);
 
                         // Open Graph Activity
                         Intent graph = new Intent(MainActivity.this, AKSGraph.class);
@@ -306,8 +331,19 @@ public class MainActivity extends AppCompatActivity {
                         Score sc = new Score();
 
                         // Disable buttons after selection
+                        btn_Submit.setEnabled(false);
+                        btn_Skip.setEnabled(false);
+                        tv_opt1.setEnabled(false);
+                        tv_opt2.setEnabled(false);
+                        tv_opt3.setEnabled(false);
+                        tv_opt4.setEnabled(false);
+
                         btn_Submit.setClickable(false);
                         btn_Skip.setClickable(false);
+                        tv_opt1.setClickable(false);
+                        tv_opt2.setClickable(false);
+                        tv_opt3.setClickable(false);
+                        tv_opt4.setClickable(false);
 
                         boolean answer = false;
                         sc.SessionID = MultiPhotoSelectActivity.sessionId;
@@ -325,6 +361,7 @@ public class MainActivity extends AppCompatActivity {
                         String deviceId = Settings.Secure.getString(MainActivity.this.getContentResolver(), Settings.Secure.ANDROID_ID);
                         sc.DeviceID = deviceId.equals(null) ? "0000" : deviceId;
 
+
                         // get selected textview
                         if (selectedOption.equals(Answer)) {
                             // Correct Animation
@@ -332,10 +369,6 @@ public class MainActivity extends AppCompatActivity {
                             selBut.setBackgroundResource(R.drawable.ans_box_correct);
 
                             // CORRECT ANSWER
-                            resultDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                            resultDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
-                            resultDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-                            resultDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                             resultDialog.setContentView(getLayoutInflater().inflate(R.layout.sample_aajkasawaal, null));
 
                             LinearLayout mainScreen = resultDialog.findViewById(R.id.sampleAajkaSawaal);
@@ -369,10 +402,6 @@ public class MainActivity extends AppCompatActivity {
 
 
                             // if WRONG ANS
-                            resultDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-                            resultDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
-                            resultDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-                            resultDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                             resultDialog.setContentView(getLayoutInflater().inflate(R.layout.sample_aajkasawaal, null));
 
                             LinearLayout mainScreen = resultDialog.findViewById(R.id.sampleAajkaSawaal);
@@ -396,30 +425,36 @@ public class MainActivity extends AppCompatActivity {
                         enterScore = score.Add(sc);
                         BackupDatabase.backup(MainActivity.this);
 
-                        final Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                //Do something after 2500ms
-                                if (correct.isPlaying()) {
-                                    correct.stop();
-                                    correct.reset();
-                                    correct.release();
-                                } else if (wrong.isPlaying()) {
-                                    wrong.stop();
-                                    wrong.reset();
-                                    wrong.release();
+                        try {
+                            final Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    //Do something after 2500ms
+                                    if (correct.isPlaying()) {
+                                        correct.stop();
+                                        correct.reset();
+                                        correct.release();
+                                    } else if (wrong.isPlaying()) {
+                                        wrong.stop();
+                                        wrong.reset();
+                                        wrong.release();
+                                    }
+                                    resultDialog.dismiss();
+                                    dialog.dismiss();
+
+                                    // Show Graph Activity
+                                    Intent graph = new Intent(MainActivity.this, AKSGraph.class);
+                                    startActivity(graph);
+
+
                                 }
-                                resultDialog.dismiss();
-                                dialog.dismiss();
+                            }, 5000);
 
-                                // Show Graph Activity
-                                Intent graph = new Intent(MainActivity.this, AKSGraph.class);
-                                startActivity(graph);
-
-
-                            }
-                        }, 5000);
+                        }
+                        catch (Exception e){
+                            e.printStackTrace();
+                        }
 
                     }
 
