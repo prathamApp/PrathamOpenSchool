@@ -568,7 +568,7 @@ public class JSInterface extends Activity {
 
     @JavascriptInterface
     public void playTts(final String toSpeak) {
-        tts.ttsFunction(toSpeak, "eng");
+        tts.ttsFunction(toSpeak, "hin");
     }
 
     @JavascriptInterface
