@@ -374,7 +374,7 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                if (checkQJson.equals(null)) {
+                if (checkQJson == null) {
                     aajKaSawalPlayed = 3;
                 }
 
@@ -505,7 +505,7 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                if (checkQJson.equals(null)) {
+                if (checkQJson == null) {
                     aajKaSawalPlayed = 3;
                 }
 
