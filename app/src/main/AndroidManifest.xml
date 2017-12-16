@@ -111,6 +111,7 @@
             android:screenOrientation="sensorLandscape" />
         <activity
             android:name=".VideoPlay"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:screenOrientation="sensorLandscape" />
 
         <!-- suppress AndroidDomInspection -->
@@ -133,6 +134,7 @@
         </activity>
         <activity
             android:name=".WelcomeActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:screenOrientation="sensorLandscape" />
         <activity
             android:name=".PullData"
@@ -154,6 +156,7 @@
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".PlayVideo"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:screenOrientation="sensorLandscape" />
         <activity
             android:name=".fragments.swipe_main_activity"
