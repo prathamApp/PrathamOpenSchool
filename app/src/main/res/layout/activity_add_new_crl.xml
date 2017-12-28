@@ -104,21 +104,11 @@
             android:textColorHint="@color/text_hint"
             android:textSize="16sp" />
 
-        <Spinner
-            android:id="@+id/spinner_State"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/edt_Mobile"
-            android:layout_margin="32dp"
-            android:textColor="#000000"
-            android:textColorHint="@color/text_hint"
-            android:textSize="16sp" />
-
         <EditText
             android:id="@+id/edt_Email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/spinner_State"
+            android:layout_below="@+id/edt_Mobile"
             android:layout_margin="32dp"
             android:hint="Email"
             android:inputType="textEmailAddress"
@@ -127,11 +117,21 @@
             android:textColorHint="@color/text_hint"
             android:textSize="16sp" />
 
+        <Spinner
+            android:id="@+id/spinner_State"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/edt_Email"
+            android:layout_margin="32dp"
+            android:textColor="#000000"
+            android:textColorHint="@color/text_hint"
+            android:textSize="16sp" />
+
         <Button
             android:id="@+id/btn_Submit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/edt_Email"
+            android:layout_below="@+id/spinner_State"
             android:layout_margin="16dp"
             android:background="@color/button"
             android:text="Submit"

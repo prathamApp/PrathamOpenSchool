@@ -148,7 +148,7 @@ public class ShareProfiles extends AppCompatActivity {
                     }
                 }
             }
-            Log.d("img_file_size::", ""+imageUrls.size());
+            Log.d("img_file_size::", "" + imageUrls.size());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -208,32 +208,46 @@ public class ShareProfiles extends AppCompatActivity {
                 }
 
                 // Files are created
+                // todo check null for all values
                 sendNewStudent();
                 sendNewGroup();
                 sendNewCrl();
                 sendNewAser();
 
-                // Creating Json Zip
-                try {
-                    String paths[] = new String[path.size()];
-                    int size = path.size();
-                    for (int i = 0; i < size; i++) {
-                        paths[i] = path.get(i);
+
+                // todo dont allow next process if everything is empty
+                if (Students.isEmpty() && Asers.isEmpty() && Groups.isEmpty() && Crls.isEmpty()) {
+                    MultiPhotoSelectActivity.dilog.dismissDilog();
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(ShareProfiles.this, "No New Data Found !!!", Toast.LENGTH_LONG).show();
+                        }
+                    });
+//                    Toast.makeText(ShareProfiles.this, "No new data found !!!", Toast.LENGTH_SHORT).show();
+                } else {
+                    // Creating Json Zip
+                    try {
+                        String paths[] = new String[path.size()];
+                        int size = path.size();
+                        for (int i = 0; i < size; i++) {
+                            paths[i] = path.get(i);
+                        }
+                        // Compressing Files
+                        Compress mergeFiles = new Compress(paths, Environment.getExternalStorageDirectory() + "/.POSinternal/sharableContent/NewProfiles.zip");
+                        mergeFiles.zip();
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                    // Compressing Files
-                    Compress mergeFiles = new Compress(paths, Environment.getExternalStorageDirectory() + "/.POSinternal/sharableContent/NewProfiles.zip");
-                    mergeFiles.zip();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    MultiPhotoSelectActivity.dilog.dismissDilog();
+                    ShareProfiles.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(ShareProfiles.this, " Data collected Successfully !!!", Toast.LENGTH_SHORT).show();
+                            // Transferring Created Zip
+                            TreansferFile("NewProfiles");
+                        }
+                    });
+
                 }
-                MultiPhotoSelectActivity.dilog.dismissDilog();
-                ShareProfiles.this.runOnUiThread(new Runnable() {
-                    public void run() {
-                        Toast.makeText(ShareProfiles.this, " Data collected Successfully !!!", Toast.LENGTH_SHORT).show();
-                        // Transferring Created Zip
-                        TreansferFile("NewProfiles");
-                    }
-                });
             }
         };
         mThread.start();
@@ -330,8 +344,8 @@ public class ShareProfiles extends AppCompatActivity {
         newStudentArray = new JSONArray();
         Students = sdb.GetAllNewStudents();
 
-        if (newStudentArray == null) {
-            Toast.makeText(c, "There are No new Students !!!", Toast.LENGTH_SHORT).show();
+        if (Students == null || Students.isEmpty()) {
+            //   Toast.makeText(ShareProfiles.this, "There are No new Students !!!", Toast.LENGTH_SHORT).show();
         } else {
             try {
                 if (Students == null) {
@@ -343,12 +357,14 @@ public class ShareProfiles extends AppCompatActivity {
                         stdObj.put("FirstName", std.FirstName);
                         stdObj.put("MiddleName", std.MiddleName);
                         stdObj.put("LastName", std.LastName);
-                        stdObj.put("Age", std.Age);
-                        stdObj.put("Class", std.Class);
+                        Integer age = std.Age;
+                        stdObj.put("Age", age == null ? 0 : std.Age);
+                        Integer cls = std.Class;
+                        stdObj.put("Class", cls == null ? 0 : std.Class);
                         stdObj.put("UpdatedDate", std.UpdatedDate);
-                        stdObj.put("Gender", std.Gender);
-                        stdObj.put("GroupID", std.GroupID);
-                        stdObj.put("CreatedBy", std.CreatedBy);
+                        stdObj.put("Gender", std.Gender == null ? "Male" : std.Gender);
+                        stdObj.put("GroupID", std.GroupID == null ? "GroupID" : std.GroupID);
+                        stdObj.put("CreatedBy", std.CreatedBy == null ? "CreatedBy" : std.CreatedBy);
                         stdObj.put("NewFlag", "true");
                         stdObj.put("StudentUID", std.StudentUID == null ? "" : std.StudentUID);
                         stdObj.put("IsSelected", std.IsSelected == null ? false : std.IsSelected);
@@ -371,8 +387,8 @@ public class ShareProfiles extends AppCompatActivity {
         newCrlArray = new JSONArray();
         Crls = cdb.GetAllNewCrl();
 
-        if (newCrlArray == null) {
-            Toast.makeText(c, "There are No new Crls !!!", Toast.LENGTH_SHORT).show();
+        if (Crls == null || Crls.isEmpty()) {
+            //  Toast.makeText(ShareProfiles.this, "There are No new Crls !!!", Toast.LENGTH_SHORT).show();
         } else {
             try {
                 for (int x = 0; x < Crls.size(); x++) {
@@ -383,7 +399,8 @@ public class ShareProfiles extends AppCompatActivity {
                     crlObj.put("LastName", crl.LastName);
                     crlObj.put("UserName", crl.UserName);
                     crlObj.put("PassWord", crl.Password);
-                    crlObj.put("ProgramId", crl.ProgramId);
+                    Integer pid = crl.ProgramId;
+                    crlObj.put("ProgramId", pid == null ? 0 : crl.ProgramId);
                     crlObj.put("Mobile", crl.Mobile);
                     crlObj.put("State", crl.State);
                     crlObj.put("Email", crl.Email);
@@ -409,8 +426,8 @@ public class ShareProfiles extends AppCompatActivity {
         newGrpArray = new JSONArray();
         Groups = gdb.GetAllNewGroups();
 
-        if (newGrpArray == null) {
-            Toast.makeText(c, "There are No new Groups !!!", Toast.LENGTH_SHORT).show();
+        if (Groups == null || Groups.isEmpty()) {
+            // Toast.makeText(ShareProfiles.this, "There are No new Groups !!!", Toast.LENGTH_SHORT).show();
         } else {
             try {
                 if (Groups == null) {
@@ -422,11 +439,13 @@ public class ShareProfiles extends AppCompatActivity {
                         grpObj.put("GroupCode", grp.GroupCode);
                         grpObj.put("GroupName", grp.GroupName);
                         grpObj.put("UnitNumber", grp.UnitNumber);
-                        grpObj.put("DeviceID", grp.DeviceID);
+                        grpObj.put("DeviceID", grp.DeviceID == null ? "DeviceID" : grp.DeviceID);
                         grpObj.put("Responsible", grp.Responsible);
                         grpObj.put("ResponsibleMobile", grp.ResponsibleMobile);
-                        grpObj.put("VillageID", grp.VillageID);
-                        grpObj.put("ProgramId", grp.ProgramID);
+                        Integer vid = grp.VillageID;
+                        grpObj.put("VillageID", vid == null ? 0 : grp.VillageID);
+                        Integer pid = grp.ProgramID;
+                        grpObj.put("ProgramId", pid == null ? 0 : grp.ProgramID);
                         grpObj.put("CreatedBy", grp.CreatedBy);
                         grpObj.put("NewFlag", !grp.newGroup);
                         grpObj.put("VillageName", grp.VillageName == null ? "" : grp.VillageName);
@@ -451,8 +470,8 @@ public class ShareProfiles extends AppCompatActivity {
         newAserArray = new JSONArray();
         Asers = adb.GetAllNewAserGroups();
 
-        if (newAserArray == null) {
-            Toast.makeText(ShareProfiles.this, "There are No new Asers !!!", Toast.LENGTH_SHORT).show();
+        if (Asers == null || Asers.isEmpty()) {
+            //     Toast.makeText(ShareProfiles.this, "There are No new Asers !!!", Toast.LENGTH_SHORT).show();
         } else {
             try {
                 if (Asers == null) {
