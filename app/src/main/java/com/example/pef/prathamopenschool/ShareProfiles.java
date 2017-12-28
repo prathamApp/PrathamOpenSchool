@@ -404,7 +404,7 @@ public class ShareProfiles extends AppCompatActivity {
                     crlObj.put("Mobile", crl.Mobile);
                     crlObj.put("State", crl.State);
                     crlObj.put("Email", crl.Email);
-                    crlObj.put("CreatedBy", crl.CreatedBy);
+                    crlObj.put("CreatedBy", crl.CreatedBy == null ? "Created By" : crl.CreatedBy);
                     crlObj.put("NewFlag", !crl.newCrl);
 
                     newCrlArray.put(crlObj);
