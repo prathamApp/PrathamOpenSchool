@@ -535,7 +535,7 @@ public class CrlShareReceiveProfiles extends AppCompatActivity implements Extrac
     }
 
     // Update Json in Device's Database when Received new files from another Device
-    public void UpdateAllJson() throws JSONException {
+    public void UpdateDB() throws JSONException {
 
         // For Loading CRL Json From External Storage (Assets)
         String crljsonData = loadCrlJSONFromAsset();
@@ -677,6 +677,8 @@ public class CrlShareReceiveProfiles extends AppCompatActivity implements Extrac
                 stdObj.CreatedBy = stdJsonObject.getString("CreatedBy");
                 stdObj.StudentUID = stdJsonObject.getString("StudentUID");
                 stdObj.newStudent = true;
+                //todo new
+                stdObj.IsSelected = stdJsonObject.getBoolean("IsSelected");
 
                 sdb.replaceData(stdObj);
                 BackupDatabase.backup(c);
@@ -1244,7 +1246,8 @@ public class CrlShareReceiveProfiles extends AppCompatActivity implements Extrac
 
             // Inserting All Jsons in Database
             try {
-                UpdateAllJson();
+                // todo
+                UpdateDB();
                 // Error causing here
                 newProfile.delete();
                 // Transfer Student's Profiles from Receive folder to Student Profiles

@@ -362,11 +362,11 @@ public class ShareProfiles extends AppCompatActivity {
                         Integer cls = std.Class;
                         stdObj.put("Class", cls == null ? 0 : std.Class);
                         stdObj.put("UpdatedDate", std.UpdatedDate);
-                        stdObj.put("Gender", std.Gender == null ? "Male" : std.Gender);
-                        stdObj.put("GroupID", std.GroupID == null ? "GroupID" : std.GroupID);
-                        stdObj.put("CreatedBy", std.CreatedBy == null ? "CreatedBy" : std.CreatedBy);
+                        stdObj.put("Gender", std.Gender.equals(null) ? "Male" : std.Gender);
+                        stdObj.put("GroupID", std.GroupID.equals(null) ? "GroupID" : std.GroupID);
+                        stdObj.put("CreatedBy", std.CreatedBy.equals(null) ? "CreatedBy" : std.CreatedBy);
                         stdObj.put("NewFlag", "true");
-                        stdObj.put("StudentUID", std.StudentUID == null ? "" : std.StudentUID);
+                        stdObj.put("StudentUID", std.StudentUID.equals(null) ? "" : std.StudentUID);
                         stdObj.put("IsSelected", std.IsSelected == null ? false : std.IsSelected);
                         newStudentArray.put(stdObj);
                     }
@@ -404,8 +404,8 @@ public class ShareProfiles extends AppCompatActivity {
                     crlObj.put("Mobile", crl.Mobile);
                     crlObj.put("State", crl.State);
                     crlObj.put("Email", crl.Email);
-                    crlObj.put("CreatedBy", crl.CreatedBy == null ? "Created By" : crl.CreatedBy);
-                    crlObj.put("NewFlag", !crl.newCrl);
+                    crlObj.put("CreatedBy", crl.CreatedBy.equals(null) ? "Created By" : crl.CreatedBy);
+                    crlObj.put("NewFlag", crl.newCrl == null ? false : !crl.newCrl);
 
                     newCrlArray.put(crlObj);
                 }
@@ -439,7 +439,7 @@ public class ShareProfiles extends AppCompatActivity {
                         grpObj.put("GroupCode", grp.GroupCode);
                         grpObj.put("GroupName", grp.GroupName);
                         grpObj.put("UnitNumber", grp.UnitNumber);
-                        grpObj.put("DeviceID", grp.DeviceID == null ? "DeviceID" : grp.DeviceID);
+                        grpObj.put("DeviceID", grp.DeviceID.equals(null) ? "DeviceID" : grp.DeviceID);
                         grpObj.put("Responsible", grp.Responsible);
                         grpObj.put("ResponsibleMobile", grp.ResponsibleMobile);
                         Integer vid = grp.VillageID;
@@ -448,8 +448,8 @@ public class ShareProfiles extends AppCompatActivity {
                         grpObj.put("ProgramId", pid == null ? 0 : grp.ProgramID);
                         grpObj.put("CreatedBy", grp.CreatedBy);
                         grpObj.put("NewFlag", !grp.newGroup);
-                        grpObj.put("VillageName", grp.VillageName == null ? "" : grp.VillageName);
-                        grpObj.put("SchoolName", grp.SchoolName == null ? "" : grp.SchoolName);
+                        grpObj.put("VillageName", grp.VillageName.equals(null) ? "" : grp.VillageName);
+                        grpObj.put("SchoolName", grp.SchoolName.equals(null) ? "" : grp.SchoolName);
                         newGrpArray.put(grpObj);
                     }
 
@@ -496,9 +496,9 @@ public class ShareProfiles extends AppCompatActivity {
                         asrObj.put("ODiv", asr.ODiv);
                         asrObj.put("WAdd", asr.WAdd);
                         asrObj.put("WSub", asr.WSub);
-                        asrObj.put("CreatedBy", asr.CreatedBy);
+                        asrObj.put("CreatedBy", asr.CreatedBy.equals(null) ? "" : asr.CreatedBy);
                         asrObj.put("CreatedDate", asr.CreatedDate);
-                        asrObj.put("DeviceId", asr.DeviceId);
+                        asrObj.put("DeviceId", asr.DeviceId.equals(null) ? "" : asr.DeviceId);
                         asrObj.put("FLAG", asr.FLAG);
 
                         newAserArray.put(asrObj);

@@ -201,6 +201,8 @@ public class StudentDBHelper extends DBHelper {
             contentValues.put("CreatedBy", obj.CreatedBy);
             contentValues.put("StudentUID", obj.StudentUID);
             contentValues.put("NewFlag", obj.newStudent);
+            contentValues.put("IsSelected", obj.IsSelected);
+
 
 
             database.replace("Student", null, contentValues);
