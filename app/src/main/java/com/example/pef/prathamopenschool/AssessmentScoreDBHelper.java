@@ -2,7 +2,6 @@ package com.example.pef.prathamopenschool;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.text.Editable;
 import android.util.Log;
 
 import org.json.JSONObject;
@@ -64,19 +63,19 @@ public class AssessmentScoreDBHelper extends DBHelper {
 
         long dbentries = database.insert("AssessmentScores", null, contentValues);
         database.close();
-        Log.d("values ::::: ",contentValues.toString());
+        Log.d("values ::::: ", contentValues.toString());
 
         return dbentries;
     }
 
-    public List<JSONObject> GetLastStudentSessionCount(String LastSession){
+    public List<JSONObject> GetLastStudentSessionCount(String LastSession) {
 
         List<JSONObject> studentSessionCount = new ArrayList<JSONObject>();
         try {
 
             Cursor cursor;
             database = getWritableDatabase();
-            cursor = database.rawQuery("select aGroupID, count(aSessionID) as aSessionID from( select distinct aSessionID, aGroupID from AssessmentScores where aSessionID = '"+LastSession+"') group by(aGroupID)", null);
+            cursor = database.rawQuery("select aGroupID, count(aSessionID) as aSessionID from( select distinct aSessionID, aGroupID from AssessmentScores where aSessionID = '" + LastSession + "') group by(aGroupID)", null);
             cursor.moveToFirst();
             JSONObject ssc;
             int count = cursor.getCount();
@@ -92,13 +91,13 @@ public class AssessmentScoreDBHelper extends DBHelper {
             }
             cursor.close();
             return studentSessionCount;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return studentSessionCount;
         }
     }
 
-    public List<JSONObject> GetStudentSessionCount(){
+    public List<JSONObject> GetStudentSessionCount() {
 
         List<JSONObject> studentSessionCount = new ArrayList<JSONObject>();
         try {
@@ -121,7 +120,7 @@ public class AssessmentScoreDBHelper extends DBHelper {
             }
             cursor.close();
             return studentSessionCount;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return studentSessionCount;
         }
@@ -141,6 +140,7 @@ public class AssessmentScoreDBHelper extends DBHelper {
             return null;
         }
     }
+
     public String GetLastAssessmentSession() {
         try {
             Cursor cursor;
@@ -210,7 +210,7 @@ public class AssessmentScoreDBHelper extends DBHelper {
         try {
             Cursor cursor;
             database = getWritableDatabase();
-                cursor = database.rawQuery("select SUM(aScoredMarks) as aScoredMarks, SUM(aTotalMarks) as aTotalMarks from AssessmentScores where (aStartDateTime and aEndDateTime between '"+dp_FromDateText+"' and '"+dp_ToDateText+"') and aGroupID = '" + aGroupID + "' and aResourceID in ("+resIDs+")", null);
+            cursor = database.rawQuery("select SUM(aScoredMarks) as aScoredMarks, SUM(aTotalMarks) as aTotalMarks from AssessmentScores where (aStartDateTime and aEndDateTime between '" + dp_FromDateText + "' and '" + dp_ToDateText + "') and aGroupID = '" + aGroupID + "' and aResourceID in (" + resIDs + ")", null);
             return PopulateAssessmentFromCursor(cursor);
 
         } catch (Exception ex) {
@@ -277,4 +277,12 @@ public class AssessmentScoreDBHelper extends DBHelper {
     }
 
 
+    // replace null values with dummy
+    public void replaceNulls() {
+        database = getWritableDatabase();
+        Cursor cursor = database.rawQuery("UPDATE AssessmentScores SET aSessionID = IfNull(aSessionID,'0'), aGroupID = IfNull(aGroupID,'0'), aDeviceID = IfNull(aDeviceID,'0'), aResourceID = IfNull(aResourceID,'0'), aQuestionID = IfNull(aQuestionID,'0'), aScoredMarks = IfNull(aScoredMarks,'0'), aTotalMarks = IfNull(aTotalMarks,'0'), aStartDateTime = IfNull(aStartDateTime,'0'), aEndDateTime = IfNull(aEndDateTime,'0'), aLevel = IfNull(aLevel,'0'), aLessonSession= IfNull(aLessonSession,'0')", null);
+        cursor.moveToFirst();
+        cursor.close();
+        database.close();
+    }
 }

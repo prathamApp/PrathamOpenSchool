@@ -54,6 +54,9 @@ public class CrlDashboard extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        // replace all null values in db if exists
+        new checkforNulls().execute();
+
         // Execute File checking on diff thread
         new fileChecker().execute();
 
@@ -73,6 +76,56 @@ public class CrlDashboard extends AppCompatActivity {
         intent.putExtra("fromActivity", "crl");
         startActivity(intent);
     }
+
+
+    public class checkforNulls extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            // Runs on UI thread
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            // Runs on the background thread
+
+            try {
+                // todo replace null values with dummy values
+                CrlDBHelper cdb = new CrlDBHelper(CrlDashboard.this);
+                AserDBHelper adb = new AserDBHelper(CrlDashboard.this);
+                GroupDBHelper gdb = new GroupDBHelper(CrlDashboard.this);
+                StudentDBHelper sdb = new StudentDBHelper(CrlDashboard.this);
+                VillageDBHelper vdb = new VillageDBHelper(CrlDashboard.this);
+                AssessmentScoreDBHelper assdb = new AssessmentScoreDBHelper(CrlDashboard.this);
+                AttendanceDBHelper attdb = new AttendanceDBHelper(CrlDashboard.this);
+                ScoreDBHelper scrdb = new ScoreDBHelper(CrlDashboard.this);
+                StatusDBHelper statdb = new StatusDBHelper(CrlDashboard.this);
+
+                cdb.replaceNulls();
+                adb.replaceNulls();
+                gdb.replaceNulls();
+                sdb.replaceNulls();
+                vdb.replaceNulls();
+                assdb.replaceNulls();
+                attdb.replaceNulls();
+                scrdb.replaceNulls();
+                statdb.replaceNulls();
+
+                BackupDatabase.backup(CrlDashboard.this);
+
+            } catch (Exception e) {
+                e.getMessage();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void res) {
+            // Runs on the UI thread
+        }
+
+    }
+
 
     // Mandatory File Check
     private class fileChecker extends AsyncTask<Void, Void, Void> {

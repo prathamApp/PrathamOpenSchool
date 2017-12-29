@@ -331,4 +331,12 @@ public class StatusDBHelper extends DBHelper {
     }
 
 
+    // replace null values with dummy
+    public void replaceNulls() {
+        database = getWritableDatabase();
+        Cursor cursor = database.rawQuery("UPDATE Status SET key = IfNull(key,'0'), value = IfNull(value,'0'), trailerCount = IfNull(trailerCount,'0'), oldTrailerCount = IfNull(oldTrailerCount,'0')", null);
+        cursor.moveToFirst();
+        cursor.close();
+        database.close();
+    }
 }

@@ -121,4 +121,12 @@ public class AttendanceDBHelper extends DBHelper {
     }
 
 
+    // replace null values with dummy
+    public void replaceNulls() {
+        database = getWritableDatabase();
+        Cursor cursor = database.rawQuery("UPDATE Attendance SET SessionID = IfNull(SessionID,'0'), GroupID = IfNull(GroupID,'0'), PresentStudentIds = IfNull(PresentStudentIds,'0')", null);
+        cursor.moveToFirst();
+        cursor.close();
+        database.close();
+    }
 }

@@ -483,4 +483,12 @@ public class VillageDBHelper extends DBHelper {
         }
     }
 
+    // replace null values with dummy
+    public void replaceNulls() {
+        database = getWritableDatabase();
+        Cursor cursor = database.rawQuery("UPDATE Village SET VillageID = IfNull(VillageID,'VillageID'), VillageCode = IfNull(VillageCode,'0'), VillageName = IfNull(VillageName,'0'), Block = IfNull(Block,'0'), District = IfNull(District,'0'), State = IfNull(State,'0'), CRLID = IfNull(CRLID,'0')", null);
+        cursor.moveToFirst();
+        cursor.close();
+        database.close();
+    }
 }

@@ -410,4 +410,12 @@ public class GroupDBHelper extends DBHelper {
         }
     }
 
+    // replace null values with dummy
+    public void replaceNulls() {
+        database = getWritableDatabase();
+        Cursor cursor = database.rawQuery("UPDATE Groups SET GroupID = IfNull(GroupID,'0'), GroupName = IfNull(GroupName,'0'), DeviceID = IfNull(DeviceID,'0'), VillageID = IfNull(VillageID,'0'), programId = IfNull(ProgramId,'0'), CreatedBy = IfNull(CreatedBy,'0'), NewFlag = IfNull(NewFlag,'0'), VillageName = IfNull(VillageName,'0'), SchoolName = IfNull(SchoolName,'0')", null);
+        cursor.moveToFirst();
+        cursor.close();
+        database.close();
+    }
 }
