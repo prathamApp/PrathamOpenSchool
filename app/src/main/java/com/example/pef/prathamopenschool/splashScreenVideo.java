@@ -202,13 +202,19 @@ public class splashScreenVideo extends AppCompatActivity {
                     // Check 'TabLanguage','English'),('AMAlarm','0'),('PMAlarm','0') Entry in DB
                     StatusDBHelper s = new StatusDBHelper(context);
                     boolean valuesAvailable = false;
+                    boolean langAvailable = false;
 
                     valuesAvailable = s.initialDataAvailable("aajKaSawalPlayed");
+                    langAvailable = s.initialDataAvailable("TabLanguage");
 
                     if (valuesAvailable == false) {
                         s = new StatusDBHelper(context);
                         s.insertInitialData("TabLanguage", "English");
-                        s.insertInitialData("aajKaSawalPlayed", "0");
+                    }
+
+                    if (langAvailable == false) {
+                        s = new StatusDBHelper(context);
+                        s.insertInitialData("TabLanguage", "English");
                     }
 
                     setPMAlarm();

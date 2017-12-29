@@ -203,8 +203,6 @@ public class StudentDBHelper extends DBHelper {
             contentValues.put("NewFlag", obj.newStudent);
             contentValues.put("IsSelected", obj.IsSelected);
 
-
-
             database.replace("Student", null, contentValues);
 
             database.close();
