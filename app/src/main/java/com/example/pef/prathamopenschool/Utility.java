@@ -25,6 +25,8 @@ public class Utility {
         return dateFormat.format(cal.getTime());
     }
 
+
+
     public String GetCurrentDate() {
         Calendar cal = Calendar.getInstance();
         return dateFormat1.format(cal.getTime());

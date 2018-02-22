@@ -7,9 +7,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.animation.Animation;
@@ -207,6 +209,7 @@ public class splashScreenVideo extends AppCompatActivity {
                     valuesAvailable = s.initialDataAvailable("aajKaSawalPlayed");
                     langAvailable = s.initialDataAvailable("TabLanguage");
 
+
                     if (valuesAvailable == false) {
                         s = new StatusDBHelper(context);
                         s.insertInitialData("TabLanguage", "English");
@@ -216,6 +219,8 @@ public class splashScreenVideo extends AppCompatActivity {
                         s = new StatusDBHelper(context);
                         s.insertInitialData("TabLanguage", "English");
                     }
+
+                    BackupDatabase.backup(splashScreenVideo.this);
 
                     setPMAlarm();
 

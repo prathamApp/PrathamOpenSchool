@@ -20,6 +20,10 @@
         <item name="colorControlNormal">@color/ratingEmpty</item>
         <item name="colorControlActivated">@color/colorAuthenticate</item>
     </style>
+
+    <!--For GifView Declaration-->
+    <style name="Widget.GifView" parent="@android:style/Widget"/>
+
     <!-- <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>

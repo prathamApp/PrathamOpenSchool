@@ -65,7 +65,7 @@ public class StatusDBHelper extends DBHelper {
         logs.exceptionMessage = ex.getMessage().toString();
         logs.exceptionStackTrace = ex.getStackTrace().toString();
         logs.methodName = method;
-        logs.groupId = MultiPhotoSelectActivity.selectedGroupId;
+        logs.groupId = MultiPhotoSelectActivity.selectedGroupId == null ? "GroupID" : MultiPhotoSelectActivity.selectedGroupId;
         logs.deviceId = MultiPhotoSelectActivity.deviceID;
 
         contentValues.put("CurrentDateTime", logs.currentDateTime);

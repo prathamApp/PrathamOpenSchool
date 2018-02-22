@@ -1,13 +1,32 @@
 package com.example.pef.prathamopenschool;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.ColorDrawable;
+import android.location.GnssMeasurement;
+import android.location.GnssMeasurementsEvent;
+import android.location.GnssNavigationMessage;
+import android.location.GnssStatus;
+import android.location.GpsSatellite;
+import android.location.GpsStatus;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.location.LocationProvider;
+import android.location.OnNmeaMessageListener;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
 import android.provider.Settings;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
@@ -19,12 +38,17 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.pef.prathamopenschool.gpsmodule.Interfaces.GpsTestListener;
+import com.example.pef.prathamopenschool.gpsmodule.util.GpsTestUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,15 +60,23 @@ import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static com.example.pef.prathamopenschool.gpsmodule.util.GpsTestUtil.writeGnssMeasurementToLog;
+import static com.example.pef.prathamopenschool.gpsmodule.util.GpsTestUtil.writeNavMessageToLog;
+import static com.example.pef.prathamopenschool.gpsmodule.util.GpsTestUtil.writeNmeaToLog;
 
 //import android.support.annotation.NonNull;
 
-public class MultiPhotoSelectActivity extends AppCompatActivity {
+public class MultiPhotoSelectActivity extends AppCompatActivity implements LocationListener, GpsTestListener {
 
     public static DilogBoxForProcess dilog;
     //\public static TextToSp tts;
@@ -84,6 +116,62 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
     boolean doubleBackToExitPressedOnce = false;
     String checkQJson;
 
+    // GPS
+    private static final String TAG = "GpsTest";
+
+    boolean mStarted;
+
+    boolean mFaceTrueNorth;
+
+    boolean mWriteGnssMeasurementToLog;
+
+    boolean mLogNmea;
+
+    boolean mWriteNmeaTimestampToLog;
+
+    private LocationManager mLocationManager;
+
+    private LocationProvider mProvider;
+
+    /**
+     * Android M (6.0.1) and below status and listener
+     */
+    private GpsStatus mLegacyStatus;
+
+    private GpsStatus.Listener mLegacyStatusListener;
+
+    private GpsStatus.NmeaListener mLegacyNmeaListener;
+
+    /**
+     * Android N (7.0) and above status and listeners
+     */
+    private GnssStatus mGnssStatus;
+
+    private GnssStatus.Callback mGnssStatusListener;
+
+    private GnssMeasurementsEvent.Callback mGnssMeasurementsListener; // For SNRs
+
+    private OnNmeaMessageListener mOnNmeaMessageListener;
+
+    private GnssNavigationMessage.Callback mGnssNavMessageListener;
+
+    // Listeners for Fragments
+    private ArrayList<GpsTestListener> mGpsTestListeners = new ArrayList<GpsTestListener>();
+
+    private Location mLastLocation;
+
+    private long minTime; // Min Time between location updates, in milliseconds
+
+    private float minDistance; // Min Distance between location updates, in meters
+    private MultiPhotoSelectActivity sInstance;
+    private long mFixTime;
+    SimpleDateFormat mDateFormat = new SimpleDateFormat("hh:mm:ss.SS a");
+    private String mTtff;
+//    TextView time;
+//    TextView Lat_lng;
+
+    Dialog gpsTimeDialog;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,13 +179,120 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
         myView = (RelativeLayout) findViewById(R.id.my_layoutId);
 
         setContentView(R.layout.group_select);
-        //setContentView(R.layout.sample_aajkasawaal);
 
+        // Todo check current Date Time is equal to GPS Date Time or not
+
+        // Check if location & gpstime is available
+        StatusDBHelper s = new StatusDBHelper(MultiPhotoSelectActivity.this);
+        boolean latitudeAvailable = false;
+        boolean longitudeAvailable = false;
+        boolean GPSDateTimeAvailable = false;
+
+        boolean androidIDAvailable = false;
+        boolean SerialIDAvailable = false;
+        boolean apkVersion = false;
+        boolean appName = false;
+
+
+        latitudeAvailable = s.initialDataAvailable("Latitude");
+        longitudeAvailable = s.initialDataAvailable("Longitude");
+        GPSDateTimeAvailable = s.initialDataAvailable("GPSDateTime");
+
+        androidIDAvailable = s.initialDataAvailable("AndroidID");
+        SerialIDAvailable = s.initialDataAvailable("SerialID");
+
+        apkVersion = s.initialDataAvailable("apkVersion");
+        appName = s.initialDataAvailable("appName");
+
+        if (androidIDAvailable == false) {
+            s = new StatusDBHelper(MultiPhotoSelectActivity.this);
+            String deviceID = "";
+            deviceID = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+            s.insertInitialData("AndroidID", deviceID);
+        }
+
+        if (SerialIDAvailable == false) {
+            s = new StatusDBHelper(MultiPhotoSelectActivity.this);
+            s.insertInitialData("SerialID", Build.SERIAL);
+        }
+
+        if (apkVersion == false) {
+            s = new StatusDBHelper(MultiPhotoSelectActivity.this);
+            PackageInfo pInfo = null;
+            String verCode = "";
+            try {
+                pInfo = this.getPackageManager().getPackageInfo(getPackageName(), 0);
+                verCode = pInfo.versionName;
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+            s.insertInitialData("apkVersion", verCode);
+        } else {
+            s = new StatusDBHelper(MultiPhotoSelectActivity.this);
+            PackageInfo pInfo = null;
+            String verCode = "";
+            try {
+                pInfo = this.getPackageManager().getPackageInfo(getPackageName(), 0);
+                verCode = pInfo.versionName;
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+            s.Update("apkVersion", verCode);
+
+        }
+
+
+        if (latitudeAvailable == false || longitudeAvailable == false || GPSDateTimeAvailable == false) {
+            // Execute GPS Location & Time Dialog
+            // GPS Signal Dialog
+            gpsTimeDialog = new Dialog(this);
+            gpsTimeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            gpsTimeDialog.setContentView(R.layout.customgpsdialog);
+            gpsTimeDialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+
+            GifView gifView = gpsTimeDialog.findViewById(R.id.gif_satellite);
+            gifView.setGifResource(R.drawable.satellite);
+
+            // Setting Dialog
+            gpsTimeDialog.setCanceledOnTouchOutside(false);
+            gpsTimeDialog.setCancelable(false);
+            gpsTimeDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            gpsTimeDialog.show();
+
+            // GET GPS TIME
+            sInstance = this;
+
+            // execution of the app
+            mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            mProvider = mLocationManager.getProvider(LocationManager.GPS_PROVIDER);
+            if (mProvider == null) {
+                Log.e(TAG, "Unable to get GPS_PROVIDER");
+                Toast.makeText(this, "gps_not_supported", Toast.LENGTH_SHORT).show();
+                finish();
+                return;
+            }
+            gpsStart();
+
+        } else {
+
+            // GET GPS TIME
+            sInstance = this;
+
+            // execution of the app
+            mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            mProvider = mLocationManager.getProvider(LocationManager.GPS_PROVIDER);
+            if (mProvider == null) {
+                Log.e(TAG, "Unable to get GPS_PROVIDER");
+                Toast.makeText(this, "gps_not_supported", Toast.LENGTH_SHORT).show();
+                finish();
+                return;
+            }
+            gpsStart();
+        }
         startService(new Intent(this, WebViewService.class));
 
         tv_title = (TextView) findViewById(R.id.tv_select);
 
-        setTitle("Pratham Digital");
         dilog = new DilogBoxForProcess();
         grpSelectFlag = true;
         attendenceData = new ArrayList<>();
@@ -119,6 +314,45 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
         deviceID = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
         displayStudents();
         setLanguage();
+
+        // set Title according to program
+        if (MultiPhotoSelectActivity.programID.equals("1"))
+            setTitle("Pratham Digital - H Learning");
+        else if (MultiPhotoSelectActivity.programID.equals("2"))
+            setTitle("Pratham Digital - Read India");
+        else if (MultiPhotoSelectActivity.programID.equals("3"))
+            setTitle("Pratham Digital - Second Chance");
+        else if (MultiPhotoSelectActivity.programID.equals("4"))
+            setTitle("Pratham Digital - Pratham Institute");
+
+
+        if (appName == false) {
+            s = new StatusDBHelper(MultiPhotoSelectActivity.this);
+            // app name
+            if (MultiPhotoSelectActivity.programID.equals("1"))
+                s.insertInitialData("appName", "Pratham Digital - H Learning");
+            else if (MultiPhotoSelectActivity.programID.equals("2"))
+                s.insertInitialData("appName", "Pratham Digital - Read India");
+            else if (MultiPhotoSelectActivity.programID.equals("3"))
+                s.insertInitialData("appName", "Pratham Digital - Second Chance");
+            else if (MultiPhotoSelectActivity.programID.equals("4"))
+                s.insertInitialData("appName", "Pratham Digital - Pratham Institute");
+
+        } else {
+            s = new StatusDBHelper(MultiPhotoSelectActivity.this);
+            // app name
+            if (MultiPhotoSelectActivity.programID.equals("1"))
+                s.Update("appName", "Pratham Digital - H Learning");
+            else if (MultiPhotoSelectActivity.programID.equals("2"))
+                s.Update("appName", "Pratham Digital - Read India");
+            else if (MultiPhotoSelectActivity.programID.equals("3"))
+                s.Update("appName", "Pratham Digital - Second Chance");
+            else if (MultiPhotoSelectActivity.programID.equals("4"))
+                s.Update("appName", "Pratham Digital - Pratham Institute");
+
+        }
+
+        BackupDatabase.backup(MultiPhotoSelectActivity.this);
 
 
     }
@@ -789,6 +1023,42 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        // Check if location & gpstime is available
+        StatusDBHelper s = new StatusDBHelper(MultiPhotoSelectActivity.this);
+        boolean latitudeAvailable = false;
+        boolean longitudeAvailable = false;
+        boolean GPSTimeAvailable = false;
+
+        latitudeAvailable = s.initialDataAvailable("Latitude");
+        longitudeAvailable = s.initialDataAvailable("Longitude");
+        GPSTimeAvailable = s.initialDataAvailable("GPSTime");
+
+        if (latitudeAvailable == false || longitudeAvailable == false || GPSTimeAvailable == false) {
+            addStatusListener();
+            addNmeaListener();
+            if (!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                promptEnableGps();
+            }
+
+
+            /**
+             * Check preferences to see how these componenets should be initialized
+             */
+
+            checkTimeAndDistance(null);
+
+            if (GpsTestUtil.isGnssStatusListenerSupported()) {
+                addGnssMeasurementsListener();
+            }
+
+            if (GpsTestUtil.isGnssStatusListenerSupported()) {
+                addNavMessageListener();
+            }
+        }
+
+
+        // session
         duration = timeout;
         if (pauseFlg) {
             cd.cancel();
@@ -798,6 +1068,11 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        try {
+            mLocationManager.removeUpdates(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         Log.d("destroyed", "------------- Multi Photo --------------- in Destroy");
 
 /*        if (!CardAdapter.vidFlg) {
@@ -815,6 +1090,16 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
+        // Remove status listeners
+        removeStatusListener();
+        removeNmeaListener();
+        if (GpsTestUtil.isGnssStatusListenerSupported()) {
+            removeNavMessageListener();
+        }
+        if (GpsTestUtil.isGnssStatusListenerSupported()) {
+            removeGnssMeasurementsListener();
+        }
+
         super.onPause();
 
         pauseFlg = true;
@@ -882,4 +1167,524 @@ public class MultiPhotoSelectActivity extends AppCompatActivity {
 //
 //        }
 //    }
+
+    // GPS TIME
+    void addListener(GpsTestListener listener) {
+        mGpsTestListeners.add(listener);
+    }
+
+    @SuppressLint("MissingPermission")
+    public synchronized void gpsStart() {
+        if (!mStarted) {
+            mLocationManager
+                    .requestLocationUpdates(mProvider.getName(), 5000, 0, this);
+            mStarted = true;
+        }
+        for (GpsTestListener listener : mGpsTestListeners) {
+            listener.gpsStart();
+        }
+    }
+
+    public synchronized void gpsStop() {
+        if (mStarted) {
+            mLocationManager.removeUpdates(this);
+            mStarted = false;
+        }
+        for (GpsTestListener listener : mGpsTestListeners) {
+            listener.gpsStop();
+        }
+    }
+
+    private int mSvCount, mPrns[], mConstellationType[], mUsedInFixCount;
+    private float mSnrCn0s[], mSvElevations[], mSvAzimuths[];
+    private boolean mHasEphemeris[], mHasAlmanac[], mUsedInFix[];
+
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public void onSatelliteStatusChanged(GnssStatus status) {
+        updateGnssStatus(status);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void updateGnssStatus(GnssStatus status) {
+        mDateFormat.format(mFixTime);
+//        time.setText(mDateFormat.format(mFixTime) + "");
+        if (mPrns == null) {
+            /**
+             * We need to allocate arrays big enough so we don't overflow them.  Per
+             * https://developer.android.com/reference/android/location/GnssStatus.html#getSvid(int)
+             * 255 should be enough to contain all known satellites world-wide.
+             */
+            final int MAX_LENGTH = 255;
+            mPrns = new int[MAX_LENGTH];
+            mSnrCn0s = new float[MAX_LENGTH];
+            mSvElevations = new float[MAX_LENGTH];
+            mSvAzimuths = new float[MAX_LENGTH];
+            mConstellationType = new int[MAX_LENGTH];
+            mHasEphemeris = new boolean[MAX_LENGTH];
+            mHasAlmanac = new boolean[MAX_LENGTH];
+            mUsedInFix = new boolean[MAX_LENGTH];
+        }
+
+        final int length = status.getSatelliteCount();
+        mSvCount = 0;
+        mUsedInFixCount = 0;
+        while (mSvCount < length) {
+            int prn = status.getSvid(mSvCount);
+            mPrns[mSvCount] = prn;
+            mConstellationType[mSvCount] = status.getConstellationType(mSvCount);
+            mSnrCn0s[mSvCount] = status.getCn0DbHz(mSvCount);
+            mSvElevations[mSvCount] = status.getElevationDegrees(mSvCount);
+            mSvAzimuths[mSvCount] = status.getAzimuthDegrees(mSvCount);
+            mHasEphemeris[mSvCount] = status.hasEphemerisData(mSvCount);
+            mHasAlmanac[mSvCount] = status.hasAlmanacData(mSvCount);
+            mUsedInFix[mSvCount] = status.usedInFix(mSvCount);
+            if (status.usedInFix(mSvCount)) {
+                mUsedInFixCount++;
+            }
+
+            mSvCount++;
+        }
+    }
+
+    @Deprecated
+    private void updateLegacyStatus(GpsStatus status) {
+        mDateFormat.format(mFixTime);
+//        time.setText(mDateFormat.format(mFixTime) + "");
+        Iterator<GpsSatellite> satellites = status.getSatellites().iterator();
+        if (mPrns == null) {
+            int length = status.getMaxSatellites();
+            mPrns = new int[length];
+            mSnrCn0s = new float[length];
+            mSvElevations = new float[length];
+            mSvAzimuths = new float[length];
+            // Constellation type isn't used, but instantiate it to avoid NPE in legacy devices
+            mConstellationType = new int[length];
+            mHasEphemeris = new boolean[length];
+            mHasAlmanac = new boolean[length];
+            mUsedInFix = new boolean[length];
+        }
+
+        mSvCount = 0;
+        mUsedInFixCount = 0;
+        while (satellites.hasNext()) {
+            GpsSatellite satellite = satellites.next();
+            int prn = satellite.getPrn();
+            mPrns[mSvCount] = prn;
+            mSnrCn0s[mSvCount] = satellite.getSnr();
+            mSvElevations[mSvCount] = satellite.getElevation();
+            mSvAzimuths[mSvCount] = satellite.getAzimuth();
+            mHasEphemeris[mSvCount] = satellite.hasEphemeris();
+            mHasAlmanac[mSvCount] = satellite.hasAlmanac();
+            mUsedInFix[mSvCount] = satellite.usedInFix();
+            if (satellite.usedInFix()) {
+                mUsedInFixCount++;
+            }
+            mSvCount++;
+        }
+    }
+
+    @Override
+    public void onGpsStatusChanged(int event, GpsStatus status) {
+        switch (event) {
+            case GpsStatus.GPS_EVENT_STARTED:
+                break;
+
+            case GpsStatus.GPS_EVENT_STOPPED:
+                break;
+
+            case GpsStatus.GPS_EVENT_FIRST_FIX:
+                mTtff = GpsTestUtil.getTtffString(status.getTimeToFirstFix());
+                break;
+
+            case GpsStatus.GPS_EVENT_SATELLITE_STATUS:
+                updateLegacyStatus(status);
+                break;
+        }
+    }
+
+    @Override
+    public void onGnssFirstFix(int ttffMillis) {
+        mTtff = GpsTestUtil.getTtffString(ttffMillis);
+    }
+
+    @Override
+    public void onGnssStarted() {
+
+    }
+
+    @Override
+    public void onGnssStopped() {
+
+    }
+
+    @Override
+    public void onGnssMeasurementsReceived(GnssMeasurementsEvent event) {
+
+    }
+
+    @Override
+    public void onOrientationChanged(double orientation, double tilt) {
+
+    }
+
+    @Override
+    public void onNmeaMessage(String message, long timestamp) {
+
+    }
+
+    private boolean sendExtraCommand(String command) {
+        return mLocationManager.sendExtraCommand(LocationManager.GPS_PROVIDER, command, null);
+    }
+
+    private void addStatusListener() {
+        if (GpsTestUtil.isGnssStatusListenerSupported()) {
+            addGnssStatusListener();
+        } else {
+            addLegacyStatusListener();
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    @RequiresApi(Build.VERSION_CODES.N)
+    private void addGnssStatusListener() {
+        mGnssStatusListener = new GnssStatus.Callback() {
+            @Override
+            public void onStarted() {
+                for (GpsTestListener listener : mGpsTestListeners) {
+                    listener.onGnssStarted();
+                }
+            }
+
+            @Override
+            public void onStopped() {
+                for (GpsTestListener listener : mGpsTestListeners) {
+                    listener.onGnssStopped();
+                }
+            }
+
+            @Override
+            public void onFirstFix(int ttffMillis) {
+                for (GpsTestListener listener : mGpsTestListeners) {
+                    listener.onGnssFirstFix(ttffMillis);
+                }
+            }
+
+            @Override
+            public void onSatelliteStatusChanged(GnssStatus status) {
+                mGnssStatus = status;
+
+                // Stop progress bar after the first status information is obtained
+                setSupportProgressBarIndeterminateVisibility(Boolean.FALSE);
+
+                for (GpsTestListener listener : mGpsTestListeners) {
+                    listener.onSatelliteStatusChanged(mGnssStatus);
+                }
+            }
+        };
+        mLocationManager.registerGnssStatusCallback(mGnssStatusListener);
+    }
+
+    @SuppressLint("MissingPermission")
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void addGnssMeasurementsListener() {
+        mGnssMeasurementsListener = new GnssMeasurementsEvent.Callback() {
+            @Override
+            public void onGnssMeasurementsReceived(GnssMeasurementsEvent event) {
+                for (GpsTestListener listener : mGpsTestListeners) {
+                    listener.onGnssMeasurementsReceived(event);
+                }
+                if (mWriteGnssMeasurementToLog) {
+                    for (GnssMeasurement m : event.getMeasurements()) {
+                        writeGnssMeasurementToLog(m);
+                    }
+                }
+            }
+
+            @Override
+            public void onStatusChanged(int status) {
+                final String statusMessage;
+                switch (status) {
+                    case STATUS_LOCATION_DISABLED:
+                        statusMessage = "gnss_measurement_status_loc_disabled";
+                        break;
+                    case STATUS_NOT_SUPPORTED:
+                        statusMessage = "gnss_measurement_status_not_supported";
+                        break;
+                    case STATUS_READY:
+                        statusMessage = "gnss_measurement_status_ready";
+                        break;
+                    default:
+                        statusMessage = "gnss_status_unknown";
+                }
+                Log.d(TAG, "GnssMeasurementsEvent.Callback.onStatusChanged() - " + statusMessage);
+            }
+        };
+        mLocationManager.registerGnssMeasurementsCallback(mGnssMeasurementsListener);
+    }
+
+    @SuppressLint("MissingPermission")
+    private void addLegacyStatusListener() {
+        mLegacyStatusListener = new GpsStatus.Listener() {
+            @Override
+            public void onGpsStatusChanged(int event) {
+                mLegacyStatus = mLocationManager.getGpsStatus(mLegacyStatus);
+
+                switch (event) {
+                    case GpsStatus.GPS_EVENT_STARTED:
+                        break;
+                    case GpsStatus.GPS_EVENT_STOPPED:
+                        break;
+                    case GpsStatus.GPS_EVENT_FIRST_FIX:
+                        break;
+                    case GpsStatus.GPS_EVENT_SATELLITE_STATUS:
+                        // Stop progress bar after the first status information is obtained
+                        setSupportProgressBarIndeterminateVisibility(Boolean.FALSE);
+                        break;
+                }
+//                time.setText(mDateFormat.format(mFixTime) + "");
+                for (GpsTestListener listener : mGpsTestListeners) {
+                    listener.onGpsStatusChanged(event, mLegacyStatus);
+                }
+            }
+        };
+        mLocationManager.addGpsStatusListener(mLegacyStatusListener);
+    }
+
+    private void removeStatusListener() {
+        if (GpsTestUtil.isGnssStatusListenerSupported()) {
+            removeGnssStatusListener();
+        } else {
+            removeLegacyStatusListener();
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    private void removeGnssStatusListener() {
+        mLocationManager.unregisterGnssStatusCallback(mGnssStatusListener);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void removeGnssMeasurementsListener() {
+        if (mLocationManager != null && mGnssMeasurementsListener != null) {
+            mLocationManager.unregisterGnssMeasurementsCallback(mGnssMeasurementsListener);
+        }
+    }
+
+    private void removeLegacyStatusListener() {
+        if (mLocationManager != null && mLegacyStatusListener != null) {
+            mLocationManager.removeGpsStatusListener(mLegacyStatusListener);
+        }
+    }
+
+    private void addNmeaListener() {
+        if (GpsTestUtil.isGnssStatusListenerSupported()) {
+            addNmeaListenerAndroidN();
+        } else {
+            addLegacyNmeaListener();
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void addNmeaListenerAndroidN() {
+        if (mOnNmeaMessageListener == null) {
+            mOnNmeaMessageListener = new OnNmeaMessageListener() {
+                @Override
+                public void onNmeaMessage(String message, long timestamp) {
+                    for (GpsTestListener listener : mGpsTestListeners) {
+                        listener.onNmeaMessage(message, timestamp);
+                    }
+                    if (mLogNmea) {
+                        writeNmeaToLog(message,
+                                mWriteNmeaTimestampToLog ? timestamp : Long.MIN_VALUE);
+                    }
+                }
+            };
+        }
+        mLocationManager.addNmeaListener(mOnNmeaMessageListener);
+    }
+
+    @SuppressLint("MissingPermission")
+    private void addLegacyNmeaListener() {
+        if (mLegacyNmeaListener == null) {
+            mLegacyNmeaListener = new GpsStatus.NmeaListener() {
+                @Override
+                public void onNmeaReceived(long timestamp, String nmea) {
+                    for (GpsTestListener listener : mGpsTestListeners) {
+                        listener.onNmeaMessage(nmea, timestamp);
+                    }
+                    if (mLogNmea) {
+                        writeNmeaToLog(nmea, mWriteNmeaTimestampToLog ? timestamp : Long.MIN_VALUE);
+                    }
+                }
+            };
+        }
+        mLocationManager.addNmeaListener(mLegacyNmeaListener);
+    }
+
+    private void removeNmeaListener() {
+        if (GpsTestUtil.isGnssStatusListenerSupported()) {
+            if (mLocationManager != null && mOnNmeaMessageListener != null) {
+                mLocationManager.removeNmeaListener(mOnNmeaMessageListener);
+            }
+        } else {
+            if (mLocationManager != null && mLegacyNmeaListener != null) {
+                mLocationManager.removeNmeaListener(mLegacyNmeaListener);
+            }
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void addNavMessageListener() {
+        if (mGnssNavMessageListener == null) {
+            mGnssNavMessageListener = new GnssNavigationMessage.Callback() {
+                @Override
+                public void onGnssNavigationMessageReceived(GnssNavigationMessage event) {
+                    writeNavMessageToLog(event);
+                }
+
+                @Override
+                public void onStatusChanged(int status) {
+                    final String statusMessage;
+                    switch (status) {
+                        case STATUS_LOCATION_DISABLED:
+                            statusMessage = "gnss_nav_msg_status_loc_disabled";
+                            break;
+                        case STATUS_NOT_SUPPORTED:
+                            statusMessage = "gnss_nav_msg_status_not_supported";
+                            break;
+                        case STATUS_READY:
+                            statusMessage = "gnss_nav_msg_status_ready";
+                            break;
+                        default:
+                            statusMessage = "gnss_status_unknown";
+                    }
+                    Log.d(TAG, "GnssNavigationMessage.Callback.onStatusChanged() - " + statusMessage);
+                }
+            };
+        }
+        mLocationManager.registerGnssNavigationMessageCallback(mGnssNavMessageListener);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void removeNavMessageListener() {
+        if (mLocationManager != null && mGnssNavMessageListener != null) {
+            mLocationManager.unregisterGnssNavigationMessageCallback(mGnssNavMessageListener);
+        }
+    }
+
+    /**
+     * Ask the user if they want to enable GPS
+     */
+    private void promptEnableGps() {
+        new AlertDialog.Builder(this)
+                .setMessage("enable_gps")
+                .setPositiveButton("enable",
+                        new DialogInterface.OnClickListener() {
+
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent intent = new Intent(
+                                        Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                startActivity(intent);
+                            }
+                        }
+                )
+                .setNegativeButton("later",
+                        new DialogInterface.OnClickListener() {
+
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        }
+                )
+                .show();
+    }
+
+    @SuppressLint("MissingPermission")
+    private void checkTimeAndDistance(SharedPreferences settings) {
+        if (mStarted) {
+            mLocationManager
+                    .requestLocationUpdates(mProvider.getName(), 5000, 0, this);
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void checkNavMessageOutput(SharedPreferences settings) {
+    }
+
+
+    public void onLocationChanged(Location location) {
+        mLastLocation = location;
+        mFixTime = location.getTime();
+
+        DateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH);
+        Date gdate = new Date(location.getTime());
+        String gpsDateTime = format.format(gdate);
+
+//        Toast.makeText(MultiPhotoSelectActivity.this, "CurrentDateTime = " + CurrentDateTime + "\nGpsDateTime = " + gpsDateTime, Toast.LENGTH_SHORT).show();
+
+
+//        Toast.makeText(MultiPhotoSelectActivity.this, "Latitude : " + location.getLatitude() + "\nLongitude : " + location.getLongitude(), Toast.LENGTH_SHORT).show();
+        Log.d("onLocationChanged:::", mFixTime + "");
+        Log.d("onLocationChanged:::", location.hasAltitude() + "");
+        Log.d("onLocationChanged:::", location.hasAccuracy() + "");
+        Log.d("onLocationChanged:::", location.hasBearing() + "");
+        Log.d("onLocationChanged:::", location.hasSpeed() + "");
+        for (GpsTestListener listener : mGpsTestListeners) {
+            listener.onLocationChanged(location);
+        }
+//        Toast.makeText(MultiPhotoSelectActivity.this, mDateFormat.format(mFixTime) + "", Toast.LENGTH_SHORT).show();
+
+        // Check if location & gpstime is available
+        StatusDBHelper s = new StatusDBHelper(MultiPhotoSelectActivity.this);
+        boolean latitudeAvailable = false;
+        boolean longitudeAvailable = false;
+        boolean GPSDateTimeAvailable = false;
+
+        latitudeAvailable = s.initialDataAvailable("Latitude");
+        longitudeAvailable = s.initialDataAvailable("Longitude");
+        GPSDateTimeAvailable = s.initialDataAvailable("GPSDateTime");
+
+        if (latitudeAvailable == false) {
+            s = new StatusDBHelper(MultiPhotoSelectActivity.this);
+            s.insertInitialData("Latitude", String.valueOf(location.getLatitude()));
+        }
+        if (longitudeAvailable == false) {
+            s = new StatusDBHelper(MultiPhotoSelectActivity.this);
+            s.insertInitialData("Longitude", String.valueOf(location.getLongitude()));
+
+        }
+        if (GPSDateTimeAvailable == false) {
+            s = new StatusDBHelper(MultiPhotoSelectActivity.this);
+            s.insertInitialData("GPSDateTime", gpsDateTime);
+        }
+
+        BackupDatabase.backup(MultiPhotoSelectActivity.this);
+
+        // if dialog is open then close
+        if (gpsTimeDialog != null) {
+            if (gpsTimeDialog.isShowing())
+                gpsTimeDialog.dismiss();
+        }
+    }
+
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        for (GpsTestListener listener : mGpsTestListeners) {
+            listener.onStatusChanged(provider, status, extras);
+        }
+    }
+
+    public void onProviderEnabled(String provider) {
+        for (GpsTestListener listener : mGpsTestListeners) {
+            listener.onProviderEnabled(provider);
+        }
+    }
+
+    public void onProviderDisabled(String provider) {
+        for (GpsTestListener listener : mGpsTestListeners) {
+            listener.onProviderDisabled(provider);
+        }
+    }
+
 }
