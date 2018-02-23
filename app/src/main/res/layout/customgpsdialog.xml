@@ -19,9 +19,9 @@
         android:layout_alignParentBottom="true"
         android:gravity="center"
         android:paddingBottom="32dp"
-        android:text="Please wait ...    Getting your location ..."
+        android:text="Please wait ...   Getting your location ..."
         android:textColor="@color/colorAccent"
-        android:textSize="20sp"
+        android:textSize="24sp"
         android:textStyle="bold" />
 
 </RelativeLayout>

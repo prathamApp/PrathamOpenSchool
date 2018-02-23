@@ -466,6 +466,14 @@ public class CrlPullPushTransferUsageScreen extends AppCompatActivity {
                         obj.put("ActivatedDate", statusDBHelper.getValue("ActivatedDate"));
                         obj.put("ActivatedForGroups", statusDBHelper.getValue("ActivatedForGroups"));
 
+                        // new status table fields
+                        obj.put("Latitude", statusDBHelper.getValue("Latitude"));
+                        obj.put("Longitude", statusDBHelper.getValue("Longitude"));
+                        obj.put("GPSDateTime", statusDBHelper.getValue("GPSDateTime"));
+                        obj.put("AndroidID", statusDBHelper.getValue("AndroidID"));
+                        obj.put("SerialID", statusDBHelper.getValue("SerialID"));
+                        obj.put("apkVersion", statusDBHelper.getValue("apkVersion"));
+                        obj.put("appName", statusDBHelper.getValue("appName"));
 
                         String requestString = "{ \"metadata\": " + obj + ", \"scoreData\": " + scoreData + ", \"LogsData\": " + logsData + ", \"attendanceData\": " + attendanceData + ", \"newStudentsData\": " + studentData + ", \"newCrlsData\": " + crlData + ", \"newGroupsData\": " + grpData + ", \"AserTableData\": " + aserData + "}";//Ketan
                         WriteSettings(c, requestString, "pushNewDataToServer-" + (deviceId.equals(null) ? "0000" : deviceId));

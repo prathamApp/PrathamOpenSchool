@@ -176,11 +176,8 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        myView = (RelativeLayout) findViewById(R.id.my_layoutId);
-
         setContentView(R.layout.group_select);
-
-        // Todo check current Date Time is equal to GPS Date Time or not
+        myView = (RelativeLayout) findViewById(R.id.my_layoutId);
 
         // Check if location & gpstime is available
         StatusDBHelper s = new StatusDBHelper(MultiPhotoSelectActivity.this);
@@ -354,8 +351,17 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
 
         BackupDatabase.backup(MultiPhotoSelectActivity.this);
 
-
     }
+
+
+    public static boolean isTimeAutomatic(Context c) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            return Settings.Global.getInt(c.getContentResolver(), Settings.Global.AUTO_TIME, 0) == 1;
+        } else {
+            return android.provider.Settings.System.getInt(c.getContentResolver(), android.provider.Settings.System.AUTO_TIME, 0) == 1;
+        }
+    }
+
 
     public void displayStudents() {
         String assignedGroupIDs[];
@@ -1024,6 +1030,27 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
     protected void onResume() {
         super.onResume();
 
+        // turn off auto date timed
+        boolean timeAutomatic = isTimeAutomatic(MultiPhotoSelectActivity.this);
+
+        if (timeAutomatic) {
+            // Auto Time
+        } else {
+            // Manual Time (Off)
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Select GPS Time from Settings")
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setMessage("Please click on \"Use GPS-provided time\" from \"Automatic date & time\" option !!!")
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            startActivity(new Intent(android.provider.Settings.ACTION_DATE_SETTINGS));
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+
         // Check if location & gpstime is available
         StatusDBHelper s = new StatusDBHelper(MultiPhotoSelectActivity.this);
         boolean latitudeAvailable = false;
@@ -1068,6 +1095,7 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
 
     @Override
     protected void onDestroy() {
+
         try {
             mLocationManager.removeUpdates(this);
         } catch (Exception e) {
@@ -1621,7 +1649,6 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
         DateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH);
         Date gdate = new Date(location.getTime());
         String gpsDateTime = format.format(gdate);
-
 //        Toast.makeText(MultiPhotoSelectActivity.this, "CurrentDateTime = " + CurrentDateTime + "\nGpsDateTime = " + gpsDateTime, Toast.LENGTH_SHORT).show();
 
 
@@ -1658,6 +1685,9 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
         if (GPSDateTimeAvailable == false) {
             s = new StatusDBHelper(MultiPhotoSelectActivity.this);
             s.insertInitialData("GPSDateTime", gpsDateTime);
+        } else {
+            s = new StatusDBHelper(MultiPhotoSelectActivity.this);
+            s.Update("GPSDateTime", gpsDateTime);
         }
 
         BackupDatabase.backup(MultiPhotoSelectActivity.this);
