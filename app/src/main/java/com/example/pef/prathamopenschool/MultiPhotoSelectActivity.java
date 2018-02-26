@@ -1,6 +1,7 @@
 package com.example.pef.prathamopenschool;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -25,6 +26,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
@@ -171,6 +174,7 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
 //    TextView Lat_lng;
 
     Dialog gpsTimeDialog;
+    TextView tv_msg, tv_msgBottom;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -189,7 +193,6 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
         boolean SerialIDAvailable = false;
         boolean apkVersion = false;
         boolean appName = false;
-
 
         latitudeAvailable = s.initialDataAvailable("Latitude");
         longitudeAvailable = s.initialDataAvailable("Longitude");
@@ -238,6 +241,7 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
 
         }
 
+        // Timer Start
 
         if (latitudeAvailable == false || longitudeAvailable == false || GPSDateTimeAvailable == false) {
             // Execute GPS Location & Time Dialog
@@ -269,6 +273,18 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
                 return;
             }
             gpsStart();
+
+            /*           // if time more than minute then show " Go outside dialog " i.e set message
+            tv_msg = gpsTimeDialog.findViewById(R.id.tv_msg);
+ */
+            // if time more than minute then show " Go outside dialog " i.e set message
+            tv_msgBottom = gpsTimeDialog.findViewById(R.id.tv_msgBottom);
+            tv_msgBottom.setVisibility(View.GONE);
+            try {
+                doAfterSomeTime();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
         } else {
 
@@ -350,7 +366,20 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
         }
 
         BackupDatabase.backup(MultiPhotoSelectActivity.this);
+    }
 
+    private static final Handler mainThreadHandler = new Handler(Looper.getMainLooper());
+
+    public void doAfterSomeTime() {
+        Runnable delayedTask = new Runnable() {
+            @Override
+            public void run() {
+                if (gpsTimeDialog.isShowing()) {
+                    tv_msgBottom.setVisibility(View.VISIBLE);
+                }
+            }
+        };
+        mainThreadHandler.postDelayed(delayedTask, 60000);
     }
 
 
@@ -1091,6 +1120,24 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
             cd.cancel();
             pauseFlg = false;
         }
+
+
+        if (!isMyServiceRunning(GPSLocationService.class)) {
+            // Start Location Service
+            startService(new Intent(this, GPSLocationService.class));
+        } else {
+            //Service Already runnung
+        }
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
