@@ -1069,7 +1069,7 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Select GPS Time from Settings")
                     .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setMessage("Please click on \"Use GPS-provided time\" from \"Automatic date & time\" option !!!")
+                    .setMessage("Please click on \"Use network-provided time\" from \"Automatic date & time\" option !!!")
                     .setCancelable(false)
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
