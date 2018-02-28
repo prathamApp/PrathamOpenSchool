@@ -183,7 +183,7 @@ public class CrlDBHelper extends DBHelper {
             contentValues.put("Email", obj.Email);
             contentValues.put("CreatedBy", obj.CreatedBy);
             contentValues.put("NewFlag", obj.newCrl);
-            contentValues.put("CreatedOn", obj.CreatedOn);
+            contentValues.put("CreatedOn", obj.CreatedOn == null ? "" : obj.CreatedOn);
 
             database.insert("CRL", null, contentValues);
             database.close();

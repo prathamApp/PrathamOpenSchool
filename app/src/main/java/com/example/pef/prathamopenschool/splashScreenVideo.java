@@ -444,8 +444,13 @@ public class splashScreenVideo extends AppCompatActivity {
             crlobj.Mobile = clrJsonObject.getString("Mobile");
             crlobj.State = clrJsonObject.getString("State");
             crlobj.Email = clrJsonObject.getString("Email");
-            String createdOn = clrJsonObject.getString("CreatedOn");
-            crlobj.CreatedOn = createdOn == null ? "" : createdOn;
+            String createdon = null;
+            try {
+                createdon = clrJsonObject.getString("CreatedOn");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            crlobj.CreatedOn = (createdon == null) ? "" : createdon;
 
             db.insertData(crlobj);
             BackupDatabase.backup(context);
