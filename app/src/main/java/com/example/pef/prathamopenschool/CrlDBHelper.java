@@ -20,6 +20,8 @@ public class CrlDBHelper extends DBHelper {
         super(context);
         // db = this.getWritableDatabase();
         database = getWritableDatabase();
+        Util = new Utility();
+
     }
 
     private void _PopulateLogValues(Exception ex, String method) {
@@ -52,7 +54,7 @@ public class CrlDBHelper extends DBHelper {
     // replace null values with dummy
     public void replaceNulls() {
         database = getWritableDatabase();
-        cursor = database.rawQuery("UPDATE CRL SET CRLID = IfNull(CRLID,'CRLID'), FirstName = IfNull(FirstName,'FirstName'), LastName = IfNull(LastName,'LastName'), UserName = IfNull(UserName,'UserName'), PassWord = IfNull(PassWord,'PassWord'), ProgramId = IfNull(ProgramId,'1'), Mobile = IfNull(Mobile,'0123456789'), State = IfNull(State,'State'), Email = IfNull(Email,'Email'), CreatedBy = IfNull(CreatedBy,'CreatedBy'),NewFlag = IfNull(NewFlag,'0')", null);
+        cursor = database.rawQuery("UPDATE CRL SET CRLID = IfNull(CRLID,'CRLID'), FirstName = IfNull(FirstName,'FirstName'), LastName = IfNull(LastName,'LastName'), UserName = IfNull(UserName,'UserName'), PassWord = IfNull(PassWord,'PassWord'), ProgramId = IfNull(ProgramId,'1'), Mobile = IfNull(Mobile,'0123456789'), State = IfNull(State,'State'), Email = IfNull(Email,'Email'), CreatedBy = IfNull(CreatedBy,'CreatedBy'),NewFlag = IfNull(NewFlag,'0') ,sharedBy = IfNull(sharedBy,'sharedBy') ,SharedAtDateTime = IfNull(SharedAtDateTime,'SharedAtDateTime') ,appVersion = IfNull(appVersion,'appVersion') ,appName = IfNull(appName,'appName') ,CreatedOn = IfNull(CreatedOn,'CreatedOn') ", null);
         cursor.moveToFirst();
         cursor.close();
         database.close();
@@ -102,6 +104,12 @@ public class CrlDBHelper extends DBHelper {
             contentValues.put("Email", obj.Email);
             contentValues.put("CreatedBy", obj.CreatedBy);
             contentValues.put("NewFlag", obj.newCrl);
+            // new entries
+            contentValues.put("sharedBy", obj.sharedBy == null ? "" : obj.sharedBy);
+            contentValues.put("SharedAtDateTime", obj.SharedAtDateTime == null ? "" : obj.SharedAtDateTime);
+            contentValues.put("appVersion", obj.appVersion == null ? "" : obj.appVersion);
+            contentValues.put("appName", obj.appName == null ? "" : obj.appName);
+            contentValues.put("CreatedOn", obj.CreatedOn == null ? "" : obj.CreatedOn);
 
             database.replace("CRL", null, contentValues);
             database.close();
@@ -175,6 +183,7 @@ public class CrlDBHelper extends DBHelper {
             contentValues.put("Email", obj.Email);
             contentValues.put("CreatedBy", obj.CreatedBy);
             contentValues.put("NewFlag", obj.newCrl);
+            contentValues.put("CreatedOn", obj.CreatedOn);
 
             database.insert("CRL", null, contentValues);
             database.close();
@@ -300,6 +309,12 @@ public class CrlDBHelper extends DBHelper {
                 crlObject.Email = cursor.getString((cursor.getColumnIndex("Email")));
                 crlObject.CreatedBy = cursor.getString((cursor.getColumnIndex("CreatedBy")));
                 crlObject.newCrl = Boolean.valueOf(cursor.getString((cursor.getColumnIndex("NewFlag"))));
+                // new entries
+                crlObject.sharedBy = cursor.getString(cursor.getColumnIndex("sharedBy"));
+                crlObject.SharedAtDateTime = cursor.getString(cursor.getColumnIndex("SharedAtDateTime"));
+                crlObject.appVersion = cursor.getString(cursor.getColumnIndex("appVersion"));
+                crlObject.appName = cursor.getString(cursor.getColumnIndex("appName"));
+                crlObject.CreatedOn = cursor.getString(cursor.getColumnIndex("CreatedOn"));
 
                 crl_list.add(crlObject);
                 cursor.moveToNext();

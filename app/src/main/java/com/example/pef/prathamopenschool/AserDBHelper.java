@@ -20,6 +20,7 @@ public class AserDBHelper extends DBHelper {
         super(context);
         // db = this.getWritableDatabase();
         database = getWritableDatabase();
+        Util = new Utility();
     }
 
     private void _PopulateLogValues(Exception ex, String method) {
@@ -208,6 +209,28 @@ public class AserDBHelper extends DBHelper {
     }
 
 
+    // set Flag to false
+    public void UpdateReceivedAserData(String ChildID, String testDate, int lang, int num, int oad, int osb, int oml,
+                                       int odv, int wad, int wsb, String crtby, String crtdt, int isSelected,
+                                       String sharedBy, String SharedAtDateTime, String appVersion, String appName, String CreatedOn,
+                                       String studentID, int TstType) {
+        try {
+            database = getWritableDatabase();
+            Cursor cursor = database.rawQuery("update Aser set ChildID='" + ChildID + "', TestDate='" + testDate +
+                    "', Lang = " + lang + ", Num = " + num + ", OAdd = " + oad + ", OSub = " + osb
+                    + ", OMul = " + oml + ", ODiv = " + odv + ", WAdd = " + wad + ", WSub = " + wsb
+                    + ", CreatedBy = '" + crtby + "', CreatedDate = '" + crtdt + "', FLAG =" + isSelected
+                    + ", sharedBy = '" + sharedBy + "', SharedAtDateTime = '" + SharedAtDateTime + "', appVersion =" + appVersion
+                    + ", appName = '" + appName + "', CreatedOn = '" + CreatedOn
+                    + "  WHERE StudentId='" + studentID + "' AND TestType =" + TstType + "", null);
+            cursor.moveToFirst();
+            database.close();
+        } catch (Exception ex) {
+            _PopulateLogValues(ex, "UpdateAserData");
+        }
+    }
+
+
     // Getting Aser Data based on Unique Student ID passed by universal child form
     public List<Aser> GetAllByStudentID(String StudentID, int testV) {
         try {
@@ -292,7 +315,12 @@ public class AserDBHelper extends DBHelper {
             contentValues.put("CreatedDate", obj.CreatedDate);
             contentValues.put("DeviceId", obj.DeviceId);
             contentValues.put("FLAG", obj.FLAG);
-
+            // new entries
+            contentValues.put("sharedBy", obj.sharedBy == null  ? "" : obj.sharedBy);
+            contentValues.put("SharedAtDateTime", obj.SharedAtDateTime == null ? "" : obj.SharedAtDateTime);
+            contentValues.put("appVersion", obj.appVersion == null ? "" : obj.appVersion);
+            contentValues.put("appName", obj.appName == null ? "" : obj.appName);
+            contentValues.put("CreatedOn", obj.CreatedOn == null ? "" : obj.CreatedOn);
 
             database.insert("Aser", null, contentValues);
             database.close();
@@ -356,6 +384,12 @@ public class AserDBHelper extends DBHelper {
                 aserObject.CreatedDate = cursor.getString((cursor.getColumnIndex("CreatedDate")));
                 aserObject.DeviceId = cursor.getString((cursor.getColumnIndex("DeviceId")));
                 aserObject.FLAG = cursor.getInt((cursor.getColumnIndex("FLAG")));
+                // new entries
+                aserObject.sharedBy = cursor.getString(cursor.getColumnIndex("sharedBy"));
+                aserObject.SharedAtDateTime = cursor.getString(cursor.getColumnIndex("SharedAtDateTime"));
+                aserObject.appVersion = cursor.getString(cursor.getColumnIndex("appVersion"));
+                aserObject.appName = cursor.getString(cursor.getColumnIndex("appName"));
+                aserObject.CreatedOn = cursor.getString(cursor.getColumnIndex("CreatedOn"));
 
                 aser_list.add(aserObject);
                 cursor.moveToNext();
@@ -373,7 +407,7 @@ public class AserDBHelper extends DBHelper {
     // replace null values with dummy
     public void replaceNulls() {
         database = getWritableDatabase();
-        cursor = database.rawQuery("UPDATE Aser SET StudentId = IfNull(StudentId,'StudentId'), ChildID = IfNull(ChildID,'ChildID'), TestType = IfNull(TestType,'0'), TestDate = IfNull(TestDate,'0'), Lang = IfNull(Lang,'0'), Num = IfNull(Num,'0'), OAdd = IfNull(OAdd,'0'), OSub = IfNull(OSub,'0'), OMul = IfNull(OMul,'0'), ODiv = IfNull(ODiv,'0'), WAdd= IfNull(WAdd,'0'), WSub= IfNull(WSub,'0'), CreatedBy= IfNull(CreatedBy,'0'), CreatedDate= IfNull(CreatedDate,'0'), DeviceId= IfNull(DeviceId,'0'), FLAG= IfNull(FLAG,'0'), GroupID= IfNull(GroupID,'0')", null);
+        cursor = database.rawQuery("UPDATE Aser SET StudentId = IfNull(StudentId,'StudentId'), ChildID = IfNull(ChildID,'ChildID'), TestType = IfNull(TestType,'0'), TestDate = IfNull(TestDate,'0'), Lang = IfNull(Lang,'0'), Num = IfNull(Num,'0'), OAdd = IfNull(OAdd,'0'), OSub = IfNull(OSub,'0'), OMul = IfNull(OMul,'0'), ODiv = IfNull(ODiv,'0'), WAdd= IfNull(WAdd,'0'), WSub= IfNull(WSub,'0'), CreatedBy= IfNull(CreatedBy,'0'), CreatedDate= IfNull(CreatedDate,'0'), DeviceId= IfNull(DeviceId,'0'), FLAG= IfNull(FLAG,'0'), GroupID= IfNull(GroupID,'0') ,sharedBy = IfNull(sharedBy,'sharedBy') ,SharedAtDateTime = IfNull(SharedAtDateTime,'SharedAtDateTime') ,appVersion = IfNull(appVersion,'appVersion') ,appName = IfNull(appName,'appName') ,CreatedOn = IfNull(CreatedOn,'CreatedOn') ", null);
         cursor.moveToFirst();
         cursor.close();
         database.close();

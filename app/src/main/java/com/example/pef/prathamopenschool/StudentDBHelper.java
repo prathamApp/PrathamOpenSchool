@@ -20,6 +20,8 @@ public class StudentDBHelper extends DBHelper {
         super(context);
         c = context;
         database = getWritableDatabase();
+        Util = new Utility();
+
 
     }
 
@@ -176,6 +178,7 @@ public class StudentDBHelper extends DBHelper {
             contentValues.put("NewFlag", obj.newStudent);
             contentValues.put("StudentUID", obj.StudentUID);
             contentValues.put("IsSelected", obj.IsSelected);
+            contentValues.put("CreatedOn", obj.CreatedOn);
 
             database.replace("Student", null, contentValues);
             database.close();
@@ -202,6 +205,12 @@ public class StudentDBHelper extends DBHelper {
             contentValues.put("StudentUID", obj.StudentUID);
             contentValues.put("NewFlag", obj.newStudent);
             contentValues.put("IsSelected", obj.IsSelected);
+            // new entries
+            contentValues.put("sharedBy", obj.sharedBy == null ? "" : obj.sharedBy);
+            contentValues.put("SharedAtDateTime", obj.SharedAtDateTime == null ? "" : obj.SharedAtDateTime);
+            contentValues.put("appVersion", obj.appVersion == null ? "" : obj.appVersion);
+            contentValues.put("appName", obj.appName == null ? "" : obj.appName);
+            contentValues.put("CreatedOn", obj.CreatedOn == null ? "" : obj.CreatedOn);
 
             database.replace("Student", null, contentValues);
 
@@ -231,6 +240,7 @@ public class StudentDBHelper extends DBHelper {
             contentValues.put("NewFlag", obj.newStudent);
             contentValues.put("StudentUID", obj.StudentUID);
             contentValues.put("IsSelected", obj.IsSelected);
+            contentValues.put("CreatedOn", obj.CreatedOn);
 
             database.insert("Student", null, contentValues);
             database.close();
@@ -420,6 +430,12 @@ public class StudentDBHelper extends DBHelper {
                 student.newStudent = Boolean.valueOf(cursor.getString(cursor.getColumnIndex("NewFlag")));
                 student.StudentUID = cursor.getString(cursor.getColumnIndex("StudentUID"));
                 student.IsSelected = Boolean.valueOf(cursor.getString(cursor.getColumnIndex("IsSelected")));
+                // new entries
+                student.sharedBy = cursor.getString(cursor.getColumnIndex("sharedBy"));
+                student.SharedAtDateTime = cursor.getString(cursor.getColumnIndex("SharedAtDateTime"));
+                student.appVersion = cursor.getString(cursor.getColumnIndex("appVersion"));
+                student.appName = cursor.getString(cursor.getColumnIndex("appName"));
+                student.CreatedOn = cursor.getString(cursor.getColumnIndex("CreatedOn"));
 
                 students.add(student);
                 cursor.moveToNext();
@@ -459,7 +475,7 @@ public class StudentDBHelper extends DBHelper {
     // replace null values with dummy
     public void replaceNulls() {
         database = getWritableDatabase();
-        Cursor cursor = database.rawQuery("UPDATE Student SET StudentID = IfNull(StudentID,'StudentID'), FirstName = IfNull(FirstName,'0'), MiddleName = IfNull(MiddleName,'0'), LastName = IfNull(LastName,'0'), Age = IfNull(Age,'0'), Class = IfNull(Class,'0'), UpdatedDate = IfNull(UpdatedDate,'0'), Gender = IfNull(Gender,'Male'), GroupID = IfNull(GroupID,'0'), CreatedBy = IfNull(CreatedBy,'0'), NewFlag= IfNull(NewFlag,'0'), StudentUID= IfNull(StudentUID,'0'), IsSelected= IfNull(IsSelected,'0')", null);
+        Cursor cursor = database.rawQuery("UPDATE Student SET StudentID = IfNull(StudentID,'StudentID'), FirstName = IfNull(FirstName,'0'), MiddleName = IfNull(MiddleName,'0'), LastName = IfNull(LastName,'0'), Age = IfNull(Age,'0'), Class = IfNull(Class,'0'), UpdatedDate = IfNull(UpdatedDate,'0'), Gender = IfNull(Gender,'Male'), GroupID = IfNull(GroupID,'0'), CreatedBy = IfNull(CreatedBy,'0'), NewFlag= IfNull(NewFlag,'0'), StudentUID= IfNull(StudentUID,'0'), IsSelected= IfNull(IsSelected,'0') ,sharedBy = IfNull(sharedBy,'sharedBy') ,SharedAtDateTime = IfNull(SharedAtDateTime,'SharedAtDateTime') ,appVersion = IfNull(appVersion,'appVersion') ,appName = IfNull(appName,'appName') ,CreatedOn = IfNull(CreatedOn,'CreatedOn') ", null);
         cursor.moveToFirst();
         cursor.close();
         database.close();

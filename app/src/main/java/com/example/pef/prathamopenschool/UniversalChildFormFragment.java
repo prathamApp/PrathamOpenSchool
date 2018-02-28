@@ -754,6 +754,7 @@ public class UniversalChildFormFragment extends Fragment implements DataInterfac
                                 std.CreatedBy = statdb.getValue("CRL");
                                 std.StudentUID = EditedChild;
                                 std.IsSelected = isSelected;
+                                std.CreatedOn = new Utility().GetCurrentDateTime();
 
                                 sdb.insertUniversalChildData(std);
 
@@ -768,7 +769,7 @@ public class UniversalChildFormFragment extends Fragment implements DataInterfac
                                 asr.Lang = 0;
                                 asr.Num = 0;
                                 asr.CreatedBy = statdb.getValue("CRL");
-                                asr.CreatedDate = util.GetCurrentDate();
+                                asr.CreatedDate = new Utility().GetCurrentDate();
                                 asr.DeviceId = deviceID.equals(null) ? "0000" : deviceID;
                                 asr.FLAG = bswIC ? 1 : 0;
                                 asr.OAdd = bOprAdd ? 1 : 0;
@@ -785,6 +786,9 @@ public class UniversalChildFormFragment extends Fragment implements DataInterfac
                                 int wAdd = bwpAdd ? 1 : 0;
                                 int wSub = bwpSub ? 1 : 0;
                                 int isSelected = bswIC ? 1 : 0;
+
+                                asr.CreatedOn = new Utility().GetCurrentDateTime();
+
 
                                 // testT0 = Baseline, testT1 = Endline1, testT2 = Endline2, testT3 = Endline3, testT4 = Endline4
                                 // if exists replace else insert
@@ -960,6 +964,7 @@ public class UniversalChildFormFragment extends Fragment implements DataInterfac
                                         std.CreatedBy = statdb.getValue("CRL");
                                         std.StudentUID = EditedChild;
                                         std.IsSelected = isSelected;
+                                        std.CreatedOn = new Utility().GetCurrentDateTime();
 
                                         sdb.insertUniversalChildData(std);
 
@@ -991,6 +996,8 @@ public class UniversalChildFormFragment extends Fragment implements DataInterfac
                                         int wAdd = bwpAdd ? 1 : 0;
                                         int wSub = bwpSub ? 1 : 0;
                                         int isSelected = bswIC ? 1 : 0;
+
+                                        asr.CreatedOn = new Utility().GetCurrentDateTime();
 
                                         // testT0 = Baseline, testT1 = Endline1, testT2 = Endline2, testT3 = Endline3, testT4 = Endline4
                                         // if exists replace else insert

@@ -16,6 +16,60 @@ public class Crl {
     public String Email;
     public String CreatedBy;
     Boolean newCrl;
+    public String sharedBy;
+    public String SharedAtDateTime;
+    public String appVersion;
+    public String appName;
+    public String CreatedOn;
+
+
+    public String getCreatedBy() {
+        return CreatedBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        CreatedBy = createdBy;
+    }
+
+    public String getSharedBy() {
+        return sharedBy;
+    }
+
+    public void setSharedBy(String sharedBy) {
+        this.sharedBy = sharedBy;
+    }
+
+    public String getSharedAtDateTime() {
+        return SharedAtDateTime;
+    }
+
+    public void setSharedAtDateTime(String sharedAtDateTime) {
+        SharedAtDateTime = sharedAtDateTime;
+    }
+
+    public String getAppVersion() {
+        return appVersion;
+    }
+
+    public void setAppVersion(String appVersion) {
+        this.appVersion = appVersion;
+    }
+
+    public String getAppName() {
+        return appName;
+    }
+
+    public void setAppName(String appName) {
+        this.appName = appName;
+    }
+
+    public String getCreatedOn() {
+        return CreatedOn;
+    }
+
+    public void setCreatedOn(String createdOn) {
+        CreatedOn = createdOn;
+    }
 
     public String getCRLId() {
         return CRLId;

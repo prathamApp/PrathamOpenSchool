@@ -284,7 +284,6 @@ public class CrlShareReceiveProfiles extends AppCompatActivity implements Extrac
 //                });
 
 
-
 //                progressDialog.dismiss();
 
 //                CrlShareReceiveProfiles.this.runOnUiThread(new Runnable() {
@@ -557,6 +556,13 @@ public class CrlShareReceiveProfiles extends AppCompatActivity implements Extrac
                 crlobj.CreatedBy = clrJsonObject.getString("CreatedBy");
                 crlobj.newCrl = true;
 
+                // new entries
+                crlobj.sharedBy = clrJsonObject.getString("sharedBy");
+                crlobj.SharedAtDateTime = clrJsonObject.getString("SharedAtDateTime");
+                crlobj.appVersion = clrJsonObject.getString("appVersion");
+                crlobj.appName = clrJsonObject.getString("appName");
+                crlobj.CreatedOn = clrJsonObject.getString("CreatedOn");
+
                 cdb.replaceData(crlobj);
                 BackupDatabase.backup(c);
             }
@@ -590,6 +596,12 @@ public class CrlShareReceiveProfiles extends AppCompatActivity implements Extrac
                 asrobj.DeviceId = aserJsonObject.getString("DeviceId");
                 asrobj.FLAG = aserJsonObject.getInt("FLAG");
 
+                // new entries
+                asrobj.sharedBy = aserJsonObject.getString("sharedBy");
+                asrobj.SharedAtDateTime = aserJsonObject.getString("SharedAtDateTime");
+                asrobj.appVersion = aserJsonObject.getString("appVersion");
+                asrobj.appName = aserJsonObject.getString("appName");
+                asrobj.CreatedOn = aserJsonObject.getString("CreatedOn");
 
                 if (asrobj.TestType == 0) {
                     boolean result;
@@ -598,8 +610,10 @@ public class CrlShareReceiveProfiles extends AppCompatActivity implements Extrac
                         adb.insertData(asrobj);
                         BackupDatabase.backup(c);
                     } else {
-
-                        adb.UpdateAserData(asrobj.ChildID, asrobj.TestDate, asrobj.Lang, asrobj.Num, asrobj.OAdd, asrobj.OSub, asrobj.OMul, asrobj.ODiv, asrobj.WAdd, asrobj.WSub, asrobj.CreatedBy, asrobj.CreatedDate, asrobj.FLAG, asrobj.StudentId, 0);
+                        adb.UpdateReceivedAserData(asrobj.ChildID, asrobj.TestDate, asrobj.Lang, asrobj.Num, asrobj.OAdd,
+                                asrobj.OSub, asrobj.OMul, asrobj.ODiv, asrobj.WAdd, asrobj.WSub, asrobj.CreatedBy,
+                                asrobj.CreatedDate, asrobj.FLAG, asrobj.sharedBy, asrobj.SharedAtDateTime, asrobj.appVersion,
+                                asrobj.appName, asrobj.CreatedOn, asrobj.StudentId, 0);
                         BackupDatabase.backup(c);
                     }
                 } else if (asrobj.TestType == 1) {
@@ -609,7 +623,10 @@ public class CrlShareReceiveProfiles extends AppCompatActivity implements Extrac
                         adb.insertData(asrobj);
                         BackupDatabase.backup(c);
                     } else {
-                        adb.UpdateAserData(asrobj.ChildID, asrobj.TestDate, asrobj.Lang, asrobj.Num, asrobj.OAdd, asrobj.OSub, asrobj.OMul, asrobj.ODiv, asrobj.WAdd, asrobj.WSub, asrobj.CreatedBy, asrobj.CreatedDate, asrobj.FLAG, asrobj.StudentId, 1);
+                        adb.UpdateReceivedAserData(asrobj.ChildID, asrobj.TestDate, asrobj.Lang, asrobj.Num, asrobj.OAdd,
+                                asrobj.OSub, asrobj.OMul, asrobj.ODiv, asrobj.WAdd, asrobj.WSub, asrobj.CreatedBy,
+                                asrobj.CreatedDate, asrobj.FLAG, asrobj.sharedBy, asrobj.SharedAtDateTime, asrobj.appVersion,
+                                asrobj.appName, asrobj.CreatedOn, asrobj.StudentId, 0);
                         BackupDatabase.backup(c);
                     }
                 } else if (asrobj.TestType == 2) {
@@ -619,7 +636,10 @@ public class CrlShareReceiveProfiles extends AppCompatActivity implements Extrac
                         adb.insertData(asrobj);
                         BackupDatabase.backup(c);
                     } else {
-                        adb.UpdateAserData(asrobj.ChildID, asrobj.TestDate, asrobj.Lang, asrobj.Num, asrobj.OAdd, asrobj.OSub, asrobj.OMul, asrobj.ODiv, asrobj.WAdd, asrobj.WSub, asrobj.CreatedBy, asrobj.CreatedDate, asrobj.FLAG, asrobj.StudentId, 2);
+                        adb.UpdateReceivedAserData(asrobj.ChildID, asrobj.TestDate, asrobj.Lang, asrobj.Num, asrobj.OAdd,
+                                asrobj.OSub, asrobj.OMul, asrobj.ODiv, asrobj.WAdd, asrobj.WSub, asrobj.CreatedBy,
+                                asrobj.CreatedDate, asrobj.FLAG, asrobj.sharedBy, asrobj.SharedAtDateTime, asrobj.appVersion,
+                                asrobj.appName, asrobj.CreatedOn, asrobj.StudentId, 0);
                         BackupDatabase.backup(c);
                     }
                 } else if (asrobj.TestType == 3) {
@@ -629,7 +649,10 @@ public class CrlShareReceiveProfiles extends AppCompatActivity implements Extrac
                         adb.insertData(asrobj);
                         BackupDatabase.backup(c);
                     } else {
-                        adb.UpdateAserData(asrobj.ChildID, asrobj.TestDate, asrobj.Lang, asrobj.Num, asrobj.OAdd, asrobj.OSub, asrobj.OMul, asrobj.ODiv, asrobj.WAdd, asrobj.WSub, asrobj.CreatedBy, asrobj.CreatedDate, asrobj.FLAG, asrobj.StudentId, 3);
+                        adb.UpdateReceivedAserData(asrobj.ChildID, asrobj.TestDate, asrobj.Lang, asrobj.Num, asrobj.OAdd,
+                                asrobj.OSub, asrobj.OMul, asrobj.ODiv, asrobj.WAdd, asrobj.WSub, asrobj.CreatedBy,
+                                asrobj.CreatedDate, asrobj.FLAG, asrobj.sharedBy, asrobj.SharedAtDateTime, asrobj.appVersion,
+                                asrobj.appName, asrobj.CreatedOn, asrobj.StudentId, 0);
                         BackupDatabase.backup(c);
                     }
                 } else if (asrobj.TestType == 4) {
@@ -639,7 +662,10 @@ public class CrlShareReceiveProfiles extends AppCompatActivity implements Extrac
                         adb.insertData(asrobj);
                         BackupDatabase.backup(c);
                     } else {
-                        adb.UpdateAserData(asrobj.ChildID, asrobj.TestDate, asrobj.Lang, asrobj.Num, asrobj.OAdd, asrobj.OSub, asrobj.OMul, asrobj.ODiv, asrobj.WAdd, asrobj.WSub, asrobj.CreatedBy, asrobj.CreatedDate, asrobj.FLAG, asrobj.StudentId, 4);
+                        adb.UpdateReceivedAserData(asrobj.ChildID, asrobj.TestDate, asrobj.Lang, asrobj.Num, asrobj.OAdd,
+                                asrobj.OSub, asrobj.OMul, asrobj.ODiv, asrobj.WAdd, asrobj.WSub, asrobj.CreatedBy,
+                                asrobj.CreatedDate, asrobj.FLAG, asrobj.sharedBy, asrobj.SharedAtDateTime, asrobj.appVersion,
+                                asrobj.appName, asrobj.CreatedOn, asrobj.StudentId, 0);
                         BackupDatabase.backup(c);
                     }
 
@@ -680,6 +706,13 @@ public class CrlShareReceiveProfiles extends AppCompatActivity implements Extrac
                 //todo new
                 stdObj.IsSelected = stdJsonObject.getBoolean("IsSelected");
 
+                // new entries
+                stdObj.sharedBy = stdJsonObject.getString("sharedBy");
+                stdObj.SharedAtDateTime = stdJsonObject.getString("SharedAtDateTime");
+                stdObj.appVersion = stdJsonObject.getString("appVersion");
+                stdObj.appName = stdJsonObject.getString("appName");
+                stdObj.CreatedOn = stdJsonObject.getString("CreatedOn");
+
                 sdb.replaceData(stdObj);
                 BackupDatabase.backup(c);
             }
@@ -709,6 +742,13 @@ public class CrlShareReceiveProfiles extends AppCompatActivity implements Extrac
                 grpObj.SchoolName = grpJsonObject.getString("SchoolName");
                 grpObj.VillageName = grpJsonObject.getString("VillageName");
                 grpObj.newGroup = true;
+
+                // new entries
+                grpObj.sharedBy = grpJsonObject.getString("sharedBy");
+                grpObj.SharedAtDateTime = grpJsonObject.getString("SharedAtDateTime");
+                grpObj.appVersion = grpJsonObject.getString("appVersion");
+                grpObj.appName = grpJsonObject.getString("appName");
+                grpObj.CreatedOn = grpJsonObject.getString("CreatedOn");
 
                 gdb.replaceData(grpObj);
 
@@ -1212,7 +1252,7 @@ public class CrlShareReceiveProfiles extends AppCompatActivity implements Extrac
 
     public class RecieveFiles extends AsyncTask<Void, Integer, String> {
 
-//        String targetPath;
+        //        String targetPath;
         String recieveProfilePath;
         ProgressDialog dialog;
 
@@ -1224,7 +1264,7 @@ public class CrlShareReceiveProfiles extends AppCompatActivity implements Extrac
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            dialog=new ProgressDialog(CrlShareReceiveProfiles.this);
+            dialog = new ProgressDialog(CrlShareReceiveProfiles.this);
             dialog.setMessage("Receiving Profiles");
             dialog.setCanceledOnTouchOutside(false);
             dialog.setCancelable(false);

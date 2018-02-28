@@ -15,6 +15,108 @@ public class Group {
     public String CreatedBy;
     Boolean newGroup;
 
+    public String sharedBy;
+    public String SharedAtDateTime;
+    public String appVersion;
+    public String appName;
+    public String CreatedOn;
+
+    public String getUnitNumber() {
+        return UnitNumber;
+    }
+
+    public void setUnitNumber(String unitNumber) {
+        UnitNumber = unitNumber;
+    }
+
+    public String getDeviceID() {
+        return DeviceID;
+    }
+
+    public void setDeviceID(String deviceID) {
+        DeviceID = deviceID;
+    }
+
+    public String getResponsible() {
+        return Responsible;
+    }
+
+    public void setResponsible(String responsible) {
+        Responsible = responsible;
+    }
+
+    public String getResponsibleMobile() {
+        return ResponsibleMobile;
+    }
+
+    public void setResponsibleMobile(String responsibleMobile) {
+        ResponsibleMobile = responsibleMobile;
+    }
+
+    public String getGroupCode() {
+        return GroupCode;
+    }
+
+    public void setGroupCode(String groupCode) {
+        GroupCode = groupCode;
+    }
+
+    public String getCreatedBy() {
+        return CreatedBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        CreatedBy = createdBy;
+    }
+
+    public Boolean getNewGroup() {
+        return newGroup;
+    }
+
+    public void setNewGroup(Boolean newGroup) {
+        this.newGroup = newGroup;
+    }
+
+    public String getSharedBy() {
+        return sharedBy;
+    }
+
+    public void setSharedBy(String sharedBy) {
+        this.sharedBy = sharedBy;
+    }
+
+    public String getSharedAtDateTime() {
+        return SharedAtDateTime;
+    }
+
+    public void setSharedAtDateTime(String sharedAtDateTime) {
+        SharedAtDateTime = sharedAtDateTime;
+    }
+
+    public String getAppVersion() {
+        return appVersion;
+    }
+
+    public void setAppVersion(String appVersion) {
+        this.appVersion = appVersion;
+    }
+
+    public String getAppName() {
+        return appName;
+    }
+
+    public void setAppName(String appName) {
+        this.appName = appName;
+    }
+
+    public String getCreatedOn() {
+        return CreatedOn;
+    }
+
+    public void setCreatedOn(String createdOn) {
+        CreatedOn = createdOn;
+    }
+
     public String getVillageName() {
         return VillageName;
     }

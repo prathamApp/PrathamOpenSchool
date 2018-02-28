@@ -370,6 +370,12 @@ public class CrlPullPushTransferUsageScreen extends AppCompatActivity {
                                 studentObj.put("newStudent", studentsList.get(i).newStudent); // DO THE CHANGES for HANDLING NULLS
                                 studentObj.put("StudentUID", studentsList.get(i).StudentUID == null ? "" : studentsList.get(i).StudentUID);
                                 studentObj.put("IsSelected", studentsList.get(i).IsSelected == null ? false : !studentsList.get(i).IsSelected);
+                                // new entries
+                                studentObj.put("sharedBy", studentsList.get(i).sharedBy == null ? "" : studentsList.get(i).sharedBy);
+                                studentObj.put("SharedAtDateTime", studentsList.get(i).SharedAtDateTime == null ? "" : studentsList.get(i).SharedAtDateTime);
+                                studentObj.put("appName", studentsList.get(i).appName == null ? "" : studentsList.get(i).appName);
+                                studentObj.put("appVersion", studentsList.get(i).appVersion == null ? "" : studentsList.get(i).appVersion);
+                                studentObj.put("CreatedOn", studentsList.get(i).CreatedOn == null ? "" : studentsList.get(i).CreatedOn);
 
                                 studentData.put(studentObj);
                             }
@@ -393,6 +399,13 @@ public class CrlPullPushTransferUsageScreen extends AppCompatActivity {
                                 crlObj.put("Email", crlsList.get(i).Email);
                                 crlObj.put("CreatedBy", crlsList.get(i).CreatedBy);
                                 crlObj.put("newCrl", !crlsList.get(i).newCrl);
+                                // new entries
+                                crlObj.put("sharedBy", crlsList.get(i).sharedBy == null ? "" : crlsList.get(i).sharedBy);
+                                crlObj.put("SharedAtDateTime", crlsList.get(i).SharedAtDateTime == null ? "" : crlsList.get(i).SharedAtDateTime);
+                                crlObj.put("appName", crlsList.get(i).appName == null ? "" : crlsList.get(i).appName);
+                                crlObj.put("appVersion", crlsList.get(i).appVersion == null ? "" : crlsList.get(i).appVersion);
+                                crlObj.put("CreatedOn", crlsList.get(i).CreatedOn == null ? "" : crlsList.get(i).CreatedOn);
+
                                 crlData.put(crlObj);
                             }
                         }
@@ -417,6 +430,13 @@ public class CrlPullPushTransferUsageScreen extends AppCompatActivity {
                                 grpObj.put("newGroup", !groupsList.get(i).newGroup);
                                 grpObj.put("VillageName", groupsList.get(i).VillageName == null ? "" : groupsList.get(i).VillageName);
                                 grpObj.put("SchoolName", groupsList.get(i).SchoolName == null ? "" : groupsList.get(i).SchoolName);
+                                // new entries
+                                grpObj.put("sharedBy", groupsList.get(i).sharedBy == null ? "" : groupsList.get(i).sharedBy);
+                                grpObj.put("SharedAtDateTime", groupsList.get(i).SharedAtDateTime == null ? "" : groupsList.get(i).SharedAtDateTime);
+                                grpObj.put("appName", groupsList.get(i).appName == null ? "" : groupsList.get(i).appName);
+                                grpObj.put("appVersion", groupsList.get(i).appVersion == null ? "" : groupsList.get(i).appVersion);
+                                grpObj.put("CreatedOn", groupsList.get(i).CreatedOn == null ? "" : groupsList.get(i).CreatedOn);
+
                                 grpData.put(grpObj);
                             }
                         }
@@ -445,6 +465,12 @@ public class CrlPullPushTransferUsageScreen extends AppCompatActivity {
                                 aserObj.put("CreatedDate", aserList.get(i).CreatedDate);
                                 aserObj.put("DeviceId", aserList.get(i).DeviceId);
                                 aserObj.put("FLAG", aserList.get(i).FLAG);
+                                // new entries
+                                aserObj.put("sharedBy", aserList.get(i).sharedBy == null ? "" : aserList.get(i).sharedBy);
+                                aserObj.put("SharedAtDateTime", aserList.get(i).SharedAtDateTime == null ? "" : aserList.get(i).SharedAtDateTime);
+                                aserObj.put("appName", aserList.get(i).appName == null ? "" : aserList.get(i).appName);
+                                aserObj.put("appVersion", aserList.get(i).appVersion == null ? "" : aserList.get(i).appVersion);
+                                aserObj.put("CreatedOn", aserList.get(i).CreatedOn == null ? "" : groupsList.get(i).CreatedOn);
 
                                 aserData.put(aserObj);
                             }

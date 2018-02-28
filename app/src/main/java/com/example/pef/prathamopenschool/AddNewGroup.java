@@ -35,6 +35,7 @@ public class AddNewGroup extends AppCompatActivity {
     ScoreDBHelper scoreDBHelper;
     PlayVideo playVideo;
     boolean timer;
+    Utility util;
 
 
     @Override
@@ -52,6 +53,7 @@ public class AddNewGroup extends AppCompatActivity {
         database = new VillageDBHelper(villageContext);
 
         grpContext = this;
+        util = new Utility();
 
         // Unique ID For GroupID
         uuid = UUID.randomUUID();
@@ -122,6 +124,7 @@ public class AddNewGroup extends AppCompatActivity {
                         grpobj.VillageName = "";
                         grpobj.SchoolName = "";
                         grpobj.newGroup = true;
+                        grpobj.CreatedOn = util.GetCurrentDateTime().toString();
 
                         gdb.insertData(grpobj);
                         Toast.makeText(AddNewGroup.this, "Record Inserted Successfully !!!", Toast.LENGTH_SHORT).show();

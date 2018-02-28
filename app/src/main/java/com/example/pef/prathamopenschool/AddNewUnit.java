@@ -44,6 +44,7 @@ public class AddNewUnit extends AppCompatActivity {
     boolean timer;
 
     StatusDBHelper statdb;
+    Utility util;
 
 
     @Override
@@ -64,6 +65,7 @@ public class AddNewUnit extends AppCompatActivity {
         database = new VillageDBHelper(villageContext);
 
         grpContext = this;
+        util = new Utility();
 
         // Unique ID For GroupID
         uuid = UUID.randomUUID();
@@ -148,6 +150,7 @@ public class AddNewUnit extends AppCompatActivity {
                                 grpobj.newGroup = true;
                                 grpobj.VillageID = vilID;
                                 grpobj.ProgramID = Integer.parseInt(MultiPhotoSelectActivity.programID);
+                                grpobj.CreatedOn = util.GetCurrentDateTime().toString();
 
                                 gdb.insertData(grpobj);
 

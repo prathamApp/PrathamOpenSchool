@@ -67,6 +67,9 @@ public class ShareProfiles extends AppCompatActivity {
 
     Button btnShareUsage, btnShareProfiles;
 
+    StatusDBHelper stat;
+    Utility util;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,6 +84,8 @@ public class ShareProfiles extends AppCompatActivity {
 
         // Generate Device ID
         deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        util = new Utility();
 
         // Memory Allocation
         c = this;
@@ -368,6 +373,15 @@ public class ShareProfiles extends AppCompatActivity {
                         stdObj.put("NewFlag", "true");
                         stdObj.put("StudentUID", std.StudentUID.equals(null) ? "" : std.StudentUID);
                         stdObj.put("IsSelected", std.IsSelected == null ? false : std.IsSelected);
+
+                        // new entries
+                        stat = new StatusDBHelper(ShareProfiles.this);
+                        stdObj.put("sharedBy", stat.getValue("AndroidID"));
+                        stdObj.put("SharedAtDateTime", util.GetCurrentDateTime().toString());
+                        stdObj.put("appVersion", stat.getValue("apkVersion"));
+                        stdObj.put("appName", stat.getValue("appName"));
+                        stdObj.put("CreatedOn", std.CreatedOn == null ? "" : std.CreatedOn);
+
                         newStudentArray.put(stdObj);
                     }
 
@@ -406,6 +420,14 @@ public class ShareProfiles extends AppCompatActivity {
                     crlObj.put("Email", crl.Email);
                     crlObj.put("CreatedBy", crl.CreatedBy.equals(null) ? "Created By" : crl.CreatedBy);
                     crlObj.put("NewFlag", crl.newCrl == null ? false : !crl.newCrl);
+
+                    // new entries
+                    stat = new StatusDBHelper(ShareProfiles.this);
+                    crlObj.put("sharedBy", stat.getValue("AndroidID"));
+                    crlObj.put("SharedAtDateTime", util.GetCurrentDateTime().toString());
+                    crlObj.put("appVersion", stat.getValue("apkVersion"));
+                    crlObj.put("appName", stat.getValue("appName"));
+                    crlObj.put("CreatedOn", crl.CreatedOn == null ? "" : crl.CreatedOn);
 
                     newCrlArray.put(crlObj);
                 }
@@ -450,6 +472,15 @@ public class ShareProfiles extends AppCompatActivity {
                         grpObj.put("NewFlag", !grp.newGroup);
                         grpObj.put("VillageName", grp.VillageName.equals(null) ? "" : grp.VillageName);
                         grpObj.put("SchoolName", grp.SchoolName.equals(null) ? "" : grp.SchoolName);
+
+                        // new entries
+                        stat = new StatusDBHelper(ShareProfiles.this);
+                        grpObj.put("sharedBy", stat.getValue("AndroidID"));
+                        grpObj.put("SharedAtDateTime", util.GetCurrentDateTime().toString());
+                        grpObj.put("appVersion", stat.getValue("apkVersion"));
+                        grpObj.put("appName", stat.getValue("appName"));
+                        grpObj.put("CreatedOn", grp.CreatedOn == null ? "" : grp.CreatedOn);
+
                         newGrpArray.put(grpObj);
                     }
 
@@ -500,6 +531,14 @@ public class ShareProfiles extends AppCompatActivity {
                         asrObj.put("CreatedDate", asr.CreatedDate);
                         asrObj.put("DeviceId", asr.DeviceId.equals(null) ? "" : asr.DeviceId);
                         asrObj.put("FLAG", asr.FLAG);
+
+                        // new entries
+                        stat = new StatusDBHelper(ShareProfiles.this);
+                        asrObj.put("sharedBy", stat.getValue("AndroidID"));
+                        asrObj.put("SharedAtDateTime", util.GetCurrentDateTime().toString());
+                        asrObj.put("appVersion", stat.getValue("apkVersion"));
+                        asrObj.put("appName", stat.getValue("appName"));
+                        asrObj.put("CreatedOn", asr.CreatedOn == null ? "" : asr.CreatedOn);
 
                         newAserArray.put(asrObj);
 

@@ -40,14 +40,33 @@ public final class DatabaseInitialization {
     // Constants needed for Device entity
     public static final String CreateDeviceTable = "CREATE TABLE Device(DeviceID INTEGER NOT NULL, DeviceType TEXT NOT NULL, DeviceName TEXT NOT NULL);";
 
+
     // Constants needed for CRL entity
-    public static final String CreateCRLTable = "CREATE TABLE CRL(CRLID TEXT PRIMARY KEY, FirstName TEXT NOT NULL, LastName TEXT NOT NULL, UserName TEXT NOT NULL, PassWord TEXT NOT NULL, ProgramId INTEGER NOT NULL, Mobile TEXT NOT NULL, State TEXT NOT NULL, Email TEXT NOT NULL , CreatedBy text, NewFlag boolean);";
+    public static final String CreateCRLTable = "CREATE TABLE CRL(CRLID TEXT PRIMARY KEY, FirstName TEXT NOT NULL, LastName TEXT NOT NULL, UserName TEXT NOT NULL, PassWord TEXT NOT NULL, ProgramId INTEGER NOT NULL, Mobile TEXT NOT NULL, State TEXT NOT NULL, Email TEXT NOT NULL , CreatedBy text, NewFlag boolean,sharedBy TEXT, SharedAtDateTime TEXT, appVersion TEXT, appName TEXT, CreatedOn TEXT);";
+    public static String AlterCRLTableSharedBy = "ALTER TABLE CRL ADD COLUMN sharedBy TEXT";
+    public static String AlterCRLTableSharedAtDateTime = "ALTER TABLE CRL ADD COLUMN SharedAtDateTime TEXT";
+    public static String AlterCRLTableAppVersion = "ALTER TABLE CRL ADD COLUMN appVersion TEXT";
+    public static String AlterCRLTableAppName = "ALTER TABLE CRL ADD COLUMN appName TEXT";
+    public static String AlterCRLTableCreatedOn = "ALTER TABLE CRL ADD COLUMN CreatedOn TEXT";
+
 
     // Constants needed for Student
-    public static final String CreateStudentTable = "CREATE TABLE Student (StudentID text PRIMARY KEY, FirstName text, MiddleName text, LastName text, Age int, Class int, UpdatedDate text, Gender text, GroupID text, CreatedBy text, NewFlag boolean, StudentUID text ,IsSelected boolean);";
+    public static final String CreateStudentTable = "CREATE TABLE Student (StudentID text PRIMARY KEY, FirstName text, MiddleName text, LastName text, Age int, Class int, UpdatedDate text, Gender text, GroupID text, CreatedBy text, NewFlag boolean, StudentUID text ,IsSelected boolean,sharedBy TEXT, SharedAtDateTime TEXT, appVersion TEXT, appName TEXT, CreatedOn TEXT);";
+    public static String AlterStudentTableSharedBy = "ALTER TABLE Student ADD COLUMN sharedBy TEXT";
+    public static String AlterStudentTableSharedAtDateTime = "ALTER TABLE Student ADD COLUMN SharedAtDateTime TEXT";
+    public static String AlterStudentTableAppVersion = "ALTER TABLE Student ADD COLUMN appVersion TEXT";
+    public static String AlterStudentTableAppName = "ALTER TABLE Student ADD COLUMN appName TEXT";
+    public static String AlterStudentTableCreatedOn = "ALTER TABLE Student ADD COLUMN CreatedOn TEXT";
+
 
     // Constants needed for Group
-    public static final String CreateGroupTable = "CREATE TABLE Groups (GroupID text PRIMARY KEY,GroupCode text, GroupName text, UnitNumber text, DeviceID text, Responsible text, ResponsibleMobile text, VillageID integer, ProgramId integer, CreatedBy text, NewFlag boolean, VillageName text, SchoolName text);";
+    public static final String CreateGroupTable = "CREATE TABLE Groups (GroupID text PRIMARY KEY,GroupCode text, GroupName text, UnitNumber text, DeviceID text, Responsible text, ResponsibleMobile text, VillageID integer, ProgramId integer, CreatedBy text, NewFlag boolean, VillageName text, SchoolName text,sharedBy TEXT, SharedAtDateTime TEXT, appVersion TEXT, appName TEXT, CreatedOn TEXT);";
+    public static String AlterGroupsTableSharedBy = "ALTER TABLE Groups ADD COLUMN sharedBy TEXT";
+    public static String AlterGroupsTableSharedAtDateTime = "ALTER TABLE Groups ADD COLUMN SharedAtDateTime TEXT";
+    public static String AlterGroupsTableAppVersion = "ALTER TABLE Groups ADD COLUMN appVersion TEXT";
+    public static String AlterGroupsTableAppName = "ALTER TABLE Groups ADD COLUMN appName TEXT";
+    public static String AlterGroupsTableCreatedOn = "ALTER TABLE Groups ADD COLUMN CreatedOn TEXT";
+
 
     // Constants needed for Village
     public static final String CreateVillageTable = "CREATE TABLE Village (VillageID integer PRIMARY KEY, VillageCode text, VillageName text, Block text, District text, State text, CRLID TEXT);";
@@ -59,7 +78,13 @@ public final class DatabaseInitialization {
 
     public static final String CreateAttendanceTable = "CREATE TABLE Attendance(SessionID TEXT NOT NULL, GroupID TEXT NOT NULL, PresentStudentIds TEXT NOT NULL)";
 
-    public static final String CreateAserTable = "CREATE TABLE Aser(StudentId TEXT NOT NULL, ChildID text, TestType int, TestDate text, Lang int, Num int, OAdd boolean, OSub boolean, OMul boolean, ODiv boolean, WAdd boolean, WSub boolean, CreatedBy text, CreatedDate text, DeviceId text, FLAG boolean, GroupID TEXT );";
+    public static final String CreateAserTable = "CREATE TABLE Aser(StudentId TEXT NOT NULL, ChildID text, TestType int, TestDate text, Lang int, Num int, OAdd boolean, OSub boolean, OMul boolean, ODiv boolean, WAdd boolean, WSub boolean, CreatedBy text, CreatedDate text, DeviceId text, FLAG boolean, GroupID TEXT ,sharedBy TEXT, SharedAtDateTime TEXT, appVersion TEXT, appName TEXT, CreatedOn TEXT);";
+    public static String AlterAserTableSharedBy = "ALTER TABLE Aser ADD COLUMN sharedBy TEXT";
+    public static String AlterAserTableSharedAtDateTime = "ALTER TABLE Aser ADD COLUMN SharedAtDateTime TEXT";
+    public static String AlterAserTableAppVersion = "ALTER TABLE Aser ADD COLUMN appVersion TEXT";
+    public static String AlterAserTableAppName = "ALTER TABLE Aser ADD COLUMN appName TEXT";
+    public static String AlterAserTableCreatedOn = "ALTER TABLE Aser ADD COLUMN CreatedOn TEXT";
+
 
     // pullFlag INTEGER DEFAULT 0, group1 INTEGER DEFAULT 0, group2 INTEGER DEFAULT 0, state TEXT DEFAULT "", district TEXT DEFAULT "", block TEXT DEFAULT "", village TEXT DEFAULT ""
 

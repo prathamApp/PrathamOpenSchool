@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -15,7 +16,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public Context c;
 
     public DBHelper(Context context) {
-        super(context, DATABASE_NAME, null, 20);
+        super(context, DATABASE_NAME, null, 21);
         try {
             c = context;
             contentValues = new ContentValues();
@@ -36,7 +37,6 @@ public class DBHelper extends SQLiteOpenHelper {
         database = this.getReadableDatabase();
         return database;
     }
-
 
 
     @Override
@@ -63,7 +63,7 @@ public class DBHelper extends SQLiteOpenHelper {
             db.execSQL(DatabaseInitialization.InsertToStatus);
 
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
 
     }
@@ -71,30 +71,44 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         try {
-            db.execSQL("Drop table if exists Village");
-            db.execSQL("Drop table if exists Groups");
-            db.execSQL("Drop table if exists Student");
-            db.execSQL("Drop table if exists Logs");
-            db.execSQL("Drop table if exists Scores");
-            db.execSQL("Drop table if exists AssessmentScores");
-            db.execSQL("Drop table if exists Status");
-            db.execSQL("Drop table if exists Attendance");
-            db.execSQL("Drop table if exists CRL");
-            db.execSQL("Drop table if exists Aser");
+            Log.d("onUpgrade : ", "Old version : " + oldVersion + " New Version : " + newVersion);
 
-            db.execSQL(DatabaseInitialization.CreateAserTable);
-            db.execSQL(DatabaseInitialization.CreateCRLTable);
-            db.execSQL(DatabaseInitialization.CreateVillageTable);
-            db.execSQL(DatabaseInitialization.CreateLogTable);
-            db.execSQL(DatabaseInitialization.CreateGroupTable);
-            db.execSQL(DatabaseInitialization.CreateStudentTable);
-            db.execSQL(DatabaseInitialization.CreateScoreTable);
-            db.execSQL(DatabaseInitialization.CreateAssessmentScoreTable);
-            db.execSQL(DatabaseInitialization.CreateStatusTable);
-            db.execSQL(DatabaseInitialization.InsertToStatus);
-            db.execSQL(DatabaseInitialization.CreateAttendanceTable);
+            if ((oldVersion < newVersion) && (newVersion == 21)) {
+                // Alter Aser Table Query
+                db.execSQL(DatabaseInitialization.AlterAserTableSharedBy);
+                db.execSQL(DatabaseInitialization.AlterAserTableSharedAtDateTime);
+                db.execSQL(DatabaseInitialization.AlterAserTableAppVersion);
+                db.execSQL(DatabaseInitialization.AlterAserTableAppName);
+                db.execSQL(DatabaseInitialization.AlterAserTableCreatedOn);
+
+                // Alter Student Table Query
+                db.execSQL(DatabaseInitialization.AlterStudentTableSharedBy);
+                db.execSQL(DatabaseInitialization.AlterStudentTableSharedAtDateTime);
+                db.execSQL(DatabaseInitialization.AlterStudentTableAppVersion);
+                db.execSQL(DatabaseInitialization.AlterStudentTableAppName);
+                db.execSQL(DatabaseInitialization.AlterStudentTableCreatedOn);
+
+                // Alter Groups Table Query
+                db.execSQL(DatabaseInitialization.AlterGroupsTableSharedBy);
+                db.execSQL(DatabaseInitialization.AlterGroupsTableSharedAtDateTime);
+                db.execSQL(DatabaseInitialization.AlterGroupsTableAppVersion);
+                db.execSQL(DatabaseInitialization.AlterGroupsTableAppName);
+                db.execSQL(DatabaseInitialization.AlterGroupsTableCreatedOn);
+
+                // Alter CRL Table Query
+                db.execSQL(DatabaseInitialization.AlterCRLTableSharedBy);
+                db.execSQL(DatabaseInitialization.AlterCRLTableSharedAtDateTime);
+                db.execSQL(DatabaseInitialization.AlterCRLTableAppVersion);
+                db.execSQL(DatabaseInitialization.AlterCRLTableAppName);
+                db.execSQL(DatabaseInitialization.AlterCRLTableCreatedOn);
+
+            }
+
+            BackupDatabase.backup(c);
+
         } catch (Exception e) {
-
+            Log.d("onUpgradeException :", "ERROR");
+            e.printStackTrace();
         }
     }
 

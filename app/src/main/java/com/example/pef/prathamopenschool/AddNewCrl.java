@@ -35,6 +35,8 @@ public class AddNewCrl extends AppCompatActivity {
 
     StatusDBHelper statdb;
 
+    Utility util;
+
     /*@Override
     public void onBackPressed() {
         super.onBackPressed();
@@ -84,6 +86,7 @@ public class AddNewCrl extends AppCompatActivity {
         spinner_State.setPrompt("Select State");
         spinner_State.setAdapter(StateAdapter);
 
+        util = new Utility();
         btn_Submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -124,6 +127,8 @@ public class AddNewCrl extends AppCompatActivity {
                             crlobj.Email = edt_Email.getText().toString();
                             crlobj.CreatedBy = statdb.getValue("CRL");
                             crlobj.newCrl = true;
+
+                            crlobj.CreatedOn = util.GetCurrentDateTime();
 
                             // Check AllSpinners Emptyness
                             int SpinnerValue = spinner_State.getSelectedItemPosition();

@@ -62,6 +62,8 @@ public class AddStudentProfiles extends AppCompatActivity {
 
     StatusDBHelper statdb;
 
+    Utility util;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -186,6 +188,7 @@ public class AddStudentProfiles extends AppCompatActivity {
         btn_Clear = (Button) findViewById(R.id.btn_Clear);
 
         Util = new Utility();
+        util = new Utility();
 
 
         btn_Submit.setOnClickListener(new View.OnClickListener() {
@@ -230,6 +233,7 @@ public class AddStudentProfiles extends AppCompatActivity {
                             stdObj.newStudent = true;
                             stdObj.StudentUID = "";
                             stdObj.IsSelected = true;
+                            stdObj.CreatedOn = util.GetCurrentDateTime().toString();
 
                             sdb.insertData(stdObj);
 

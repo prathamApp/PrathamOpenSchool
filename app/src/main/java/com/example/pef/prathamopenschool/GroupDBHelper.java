@@ -17,6 +17,7 @@ public class GroupDBHelper extends DBHelper {
         super(context);
         c = context;
         database = getWritableDatabase();
+        Util = new Utility();
 
     }
 
@@ -125,7 +126,12 @@ public class GroupDBHelper extends DBHelper {
             contentValues.put("NewFlag", obj.newGroup);
             contentValues.put("VillageName", obj.VillageName);
             contentValues.put("SchoolName", obj.SchoolName);
-
+            // new entries
+            contentValues.put("sharedBy", obj.sharedBy == null ? "" : obj.sharedBy);
+            contentValues.put("SharedAtDateTime", obj.SharedAtDateTime == null ? "" : obj.SharedAtDateTime);
+            contentValues.put("appVersion", obj.appVersion == null ? "" : obj.appVersion);
+            contentValues.put("appName", obj.appName == null ? "" : obj.appName);
+            contentValues.put("CreatedOn", obj.CreatedOn == null ? "" : obj.CreatedOn);
 
             database.replace("Groups", null, contentValues);
 
@@ -155,6 +161,7 @@ public class GroupDBHelper extends DBHelper {
             contentValues.put("NewFlag", obj.newGroup);
             contentValues.put("VillageName", obj.VillageName);
             contentValues.put("SchoolName", obj.SchoolName);
+            contentValues.put("CreatedOn", obj.CreatedOn);
 
 
             database.insert("Groups", null, contentValues);
@@ -397,6 +404,12 @@ public class GroupDBHelper extends DBHelper {
                 group.SchoolName = cursor.getString((cursor.getColumnIndex("SchoolName")));
                 group.VillageName = cursor.getString((cursor.getColumnIndex("VillageName")));
                 group.newGroup = Boolean.valueOf(cursor.getString((cursor.getColumnIndex("NewFlag"))));
+                // new entries
+                group.sharedBy = cursor.getString(cursor.getColumnIndex("sharedBy"));
+                group.SharedAtDateTime = cursor.getString(cursor.getColumnIndex("SharedAtDateTime"));
+                group.appVersion = cursor.getString(cursor.getColumnIndex("appVersion"));
+                group.appName = cursor.getString(cursor.getColumnIndex("appName"));
+                group.CreatedOn = cursor.getString(cursor.getColumnIndex("CreatedOn"));
 
                 groups.add(group);
                 cursor.moveToNext();
@@ -413,7 +426,7 @@ public class GroupDBHelper extends DBHelper {
     // replace null values with dummy
     public void replaceNulls() {
         database = getWritableDatabase();
-        Cursor cursor = database.rawQuery("UPDATE Groups SET GroupID = IfNull(GroupID,'0'), GroupName = IfNull(GroupName,'0'), DeviceID = IfNull(DeviceID,'0'), VillageID = IfNull(VillageID,'0'), programId = IfNull(ProgramId,'0'), CreatedBy = IfNull(CreatedBy,'0'), NewFlag = IfNull(NewFlag,'0'), VillageName = IfNull(VillageName,'0'), SchoolName = IfNull(SchoolName,'0')", null);
+        Cursor cursor = database.rawQuery("UPDATE Groups SET GroupID = IfNull(GroupID,'0'), GroupName = IfNull(GroupName,'0'), DeviceID = IfNull(DeviceID,'0'), VillageID = IfNull(VillageID,'0'), programId = IfNull(ProgramId,'0'), CreatedBy = IfNull(CreatedBy,'0'), NewFlag = IfNull(NewFlag,'0'), VillageName = IfNull(VillageName,'0'), SchoolName = IfNull(SchoolName,'0') ,sharedBy = IfNull(sharedBy,'sharedBy') ,SharedAtDateTime = IfNull(SharedAtDateTime,'SharedAtDateTime') ,appVersion = IfNull(appVersion,'appVersion') ,appName = IfNull(appName,'appName') ,CreatedOn = IfNull(CreatedOn,'CreatedOn') ", null);
         cursor.moveToFirst();
         cursor.close();
         database.close();

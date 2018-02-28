@@ -7,11 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.animation.Animation;
@@ -446,6 +444,8 @@ public class splashScreenVideo extends AppCompatActivity {
             crlobj.Mobile = clrJsonObject.getString("Mobile");
             crlobj.State = clrJsonObject.getString("State");
             crlobj.Email = clrJsonObject.getString("Email");
+            String createdOn = clrJsonObject.getString("CreatedOn");
+            crlobj.CreatedOn = createdOn == null ? "" : createdOn;
 
             db.insertData(crlobj);
             BackupDatabase.backup(context);
