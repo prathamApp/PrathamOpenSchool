@@ -369,6 +369,23 @@ public class PullData extends AppCompatActivity implements ConnectivityReceiver.
             crlobj.Email = clrJsonObject.getString("Email");
             crlobj.newCrl = false;
 
+            // new entries default values
+            try {
+                crlobj.sharedBy = clrJsonObject.getString("sharedBy");
+                crlobj.SharedAtDateTime = clrJsonObject.getString("SharedAtDateTime");
+                crlobj.appVersion = clrJsonObject.getString("appVersion");
+                crlobj.appName = clrJsonObject.getString("appName");
+                crlobj.CreatedOn = clrJsonObject.getString("CreatedOn");
+            } catch (Exception e) {
+                crlobj.sharedBy = "";
+                crlobj.SharedAtDateTime = "";
+                crlobj.appVersion = "";
+                crlobj.appName = "";
+                crlobj.CreatedOn = "";
+                e.printStackTrace();
+            }
+
+
             db.updateJsonData(crlobj);
             BackupDatabase.backup(context);
         }

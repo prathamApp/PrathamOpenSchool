@@ -557,11 +557,21 @@ public class CrlShareReceiveProfiles extends AppCompatActivity implements Extrac
                 crlobj.newCrl = true;
 
                 // new entries
-                crlobj.sharedBy = clrJsonObject.getString("sharedBy");
-                crlobj.SharedAtDateTime = clrJsonObject.getString("SharedAtDateTime");
-                crlobj.appVersion = clrJsonObject.getString("appVersion");
-                crlobj.appName = clrJsonObject.getString("appName");
-                crlobj.CreatedOn = clrJsonObject.getString("CreatedOn");
+
+                try {
+                    crlobj.sharedBy = clrJsonObject.getString("sharedBy");
+                    crlobj.SharedAtDateTime = clrJsonObject.getString("SharedAtDateTime");
+                    crlobj.appVersion = clrJsonObject.getString("appVersion");
+                    crlobj.appName = clrJsonObject.getString("appName");
+                    crlobj.CreatedOn = clrJsonObject.getString("CreatedOn");
+                } catch (JSONException e) {
+                    crlobj.sharedBy = "";
+                    crlobj.SharedAtDateTime = "";
+                    crlobj.appVersion = "";
+                    crlobj.appName = "";
+                    crlobj.CreatedOn = "";
+                    e.printStackTrace();
+                }
 
                 cdb.replaceData(crlobj);
                 BackupDatabase.backup(c);
@@ -597,11 +607,20 @@ public class CrlShareReceiveProfiles extends AppCompatActivity implements Extrac
                 asrobj.FLAG = aserJsonObject.getInt("FLAG");
 
                 // new entries
-                asrobj.sharedBy = aserJsonObject.getString("sharedBy");
-                asrobj.SharedAtDateTime = aserJsonObject.getString("SharedAtDateTime");
-                asrobj.appVersion = aserJsonObject.getString("appVersion");
-                asrobj.appName = aserJsonObject.getString("appName");
-                asrobj.CreatedOn = aserJsonObject.getString("CreatedOn");
+                try {
+                    asrobj.sharedBy = aserJsonObject.getString("sharedBy");
+                    asrobj.SharedAtDateTime = aserJsonObject.getString("SharedAtDateTime");
+                    asrobj.appVersion = aserJsonObject.getString("appVersion");
+                    asrobj.appName = aserJsonObject.getString("appName");
+                    asrobj.CreatedOn = aserJsonObject.getString("CreatedOn");
+                } catch (JSONException e) {
+                    asrobj.sharedBy = "";
+                    asrobj.SharedAtDateTime = "";
+                    asrobj.appVersion = "";
+                    asrobj.appName = "";
+                    asrobj.CreatedOn = "";
+                    e.printStackTrace();
+                }
 
                 if (asrobj.TestType == 0) {
                     boolean result;
@@ -707,11 +726,20 @@ public class CrlShareReceiveProfiles extends AppCompatActivity implements Extrac
                 stdObj.IsSelected = stdJsonObject.getBoolean("IsSelected");
 
                 // new entries
-                stdObj.sharedBy = stdJsonObject.getString("sharedBy");
-                stdObj.SharedAtDateTime = stdJsonObject.getString("SharedAtDateTime");
-                stdObj.appVersion = stdJsonObject.getString("appVersion");
-                stdObj.appName = stdJsonObject.getString("appName");
-                stdObj.CreatedOn = stdJsonObject.getString("CreatedOn");
+                try {
+                    stdObj.sharedBy = stdJsonObject.getString("sharedBy");
+                    stdObj.SharedAtDateTime = stdJsonObject.getString("SharedAtDateTime");
+                    stdObj.appVersion = stdJsonObject.getString("appVersion");
+                    stdObj.appName = stdJsonObject.getString("appName");
+                    stdObj.CreatedOn = stdJsonObject.getString("CreatedOn");
+                } catch (JSONException e) {
+                    stdObj.sharedBy = "";
+                    stdObj.SharedAtDateTime = "";
+                    stdObj.appVersion = "";
+                    stdObj.appName = "";
+                    stdObj.CreatedOn = "";
+                    e.printStackTrace();
+                }
 
                 sdb.replaceData(stdObj);
                 BackupDatabase.backup(c);
@@ -744,11 +772,20 @@ public class CrlShareReceiveProfiles extends AppCompatActivity implements Extrac
                 grpObj.newGroup = true;
 
                 // new entries
-                grpObj.sharedBy = grpJsonObject.getString("sharedBy");
-                grpObj.SharedAtDateTime = grpJsonObject.getString("SharedAtDateTime");
-                grpObj.appVersion = grpJsonObject.getString("appVersion");
-                grpObj.appName = grpJsonObject.getString("appName");
-                grpObj.CreatedOn = grpJsonObject.getString("CreatedOn");
+                try {
+                    grpObj.sharedBy = grpJsonObject.getString("sharedBy");
+                    grpObj.SharedAtDateTime = grpJsonObject.getString("SharedAtDateTime");
+                    grpObj.appVersion = grpJsonObject.getString("appVersion");
+                    grpObj.appName = grpJsonObject.getString("appName");
+                    grpObj.CreatedOn = grpJsonObject.getString("CreatedOn");
+                } catch (JSONException e) {
+                    grpObj.sharedBy = "";
+                    grpObj.SharedAtDateTime = "";
+                    grpObj.appVersion = "";
+                    grpObj.appName = "";
+                    grpObj.CreatedOn = "";
+                    e.printStackTrace();
+                }
 
                 gdb.replaceData(grpObj);
 
@@ -991,6 +1028,23 @@ public class CrlShareReceiveProfiles extends AppCompatActivity implements Extrac
             crlobj.State = clrJsonObject.getString("State");
             crlobj.Email = clrJsonObject.getString("Email");
             crlobj.newCrl = true;
+
+            // new entries default values
+            try {
+                crlobj.sharedBy = clrJsonObject.getString("sharedBy");
+                crlobj.SharedAtDateTime = clrJsonObject.getString("SharedAtDateTime");
+                crlobj.appVersion = clrJsonObject.getString("appVersion");
+                crlobj.appName = clrJsonObject.getString("appName");
+                crlobj.CreatedOn = clrJsonObject.getString("CreatedOn");
+            } catch (Exception e) {
+                crlobj.sharedBy = "";
+                crlobj.SharedAtDateTime = "";
+                crlobj.appVersion = "";
+                crlobj.appName = "";
+                crlobj.CreatedOn = "";
+                e.printStackTrace();
+            }
+
 
             db.updateJsonData(crlobj);
             BackupDatabase.backup(context);

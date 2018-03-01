@@ -54,7 +54,7 @@ public class CrlDBHelper extends DBHelper {
     // replace null values with dummy
     public void replaceNulls() {
         database = getWritableDatabase();
-        cursor = database.rawQuery("UPDATE CRL SET CRLID = IfNull(CRLID,'CRLID'), FirstName = IfNull(FirstName,'FirstName'), LastName = IfNull(LastName,'LastName'), UserName = IfNull(UserName,'UserName'), PassWord = IfNull(PassWord,'PassWord'), ProgramId = IfNull(ProgramId,'1'), Mobile = IfNull(Mobile,'0123456789'), State = IfNull(State,'State'), Email = IfNull(Email,'Email'), CreatedBy = IfNull(CreatedBy,'CreatedBy'),NewFlag = IfNull(NewFlag,'0') ,sharedBy = IfNull(sharedBy,'sharedBy') ,SharedAtDateTime = IfNull(SharedAtDateTime,'SharedAtDateTime') ,appVersion = IfNull(appVersion,'appVersion') ,appName = IfNull(appName,'appName') ,CreatedOn = IfNull(CreatedOn,'CreatedOn') ", null);
+        cursor = database.rawQuery("UPDATE CRL SET CRLID = IfNull(CRLID,'CRLID'), FirstName = IfNull(FirstName,'FirstName'), LastName = IfNull(LastName,'LastName'), UserName = IfNull(UserName,'UserName'), PassWord = IfNull(PassWord,'PassWord'), ProgramId = IfNull(ProgramId,'1'), Mobile = IfNull(Mobile,'0123456789'), State = IfNull(State,'State'), Email = IfNull(Email,'Email'), CreatedBy = IfNull(CreatedBy,''),NewFlag = IfNull(NewFlag,'0') ,sharedBy = IfNull(sharedBy,'') ,SharedAtDateTime = IfNull(SharedAtDateTime,'0') ,appVersion = IfNull(appVersion,'') ,appName = IfNull(appName,'') ,CreatedOn = IfNull(CreatedOn,'0') ", null);
         cursor.moveToFirst();
         cursor.close();
         database.close();
@@ -157,6 +157,13 @@ public class CrlDBHelper extends DBHelper {
             contentValues.put("State", obj.State);
             contentValues.put("Email", obj.Email);
             contentValues.put("NewFlag", obj.newCrl);
+
+            // new entries// new entries
+            contentValues.put("sharedBy", obj.sharedBy == null ? "" : obj.sharedBy);
+            contentValues.put("SharedAtDateTime", obj.SharedAtDateTime == null ? "" : obj.SharedAtDateTime);
+            contentValues.put("appVersion", obj.appVersion == null ? "" : obj.appVersion);
+            contentValues.put("appName", obj.appName == null ? "" : obj.appName);
+            contentValues.put("CreatedOn", obj.CreatedOn == null ? "" : obj.CreatedOn);
 
             database.replace("CRL", null, contentValues);
             database.close();

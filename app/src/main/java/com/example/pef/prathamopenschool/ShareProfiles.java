@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
@@ -69,6 +70,7 @@ public class ShareProfiles extends AppCompatActivity {
 
     StatusDBHelper stat;
     Utility util;
+    ProgressDialog pd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,13 +110,37 @@ public class ShareProfiles extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                File zipFolder = new File(Environment.getExternalStorageDirectory() + "/.POSinternal/sharableContent/NewProfiles.zip");
-                if (zipFolder.exists()) {
-                    wipeSentFiles();
-                }
                 // Transfer Newly created entries
+                new AsyncTask<Void, Void, Void>() {
 
-                transferData();
+                    @Override
+                    protected void onPreExecute() {
+                        super.onPreExecute();
+
+                        pd = new ProgressDialog(ShareProfiles.this);
+                        pd.setMessage("Please wait ... ");
+                        pd.setCanceledOnTouchOutside(false);
+                        pd.show();
+                    }
+
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        File zipFolder = new File(Environment.getExternalStorageDirectory() + "/.POSinternal/sharableContent/NewProfiles.zip");
+                        if (zipFolder.exists()) {
+                            wipeSentFiles();
+                        }
+                        return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Void aVoid) {
+                        super.onPostExecute(aVoid);
+                        transferData();
+
+//                        if (pd != null)
+//                            pd.dismiss();
+                    }
+                }.execute();
 
                 // Sending the List of Newly Added Students in Database
                 //Students = sdb.GetAllNewStudents();
@@ -199,7 +225,7 @@ public class ShareProfiles extends AppCompatActivity {
         //enableBlu();
 
 
-        MultiPhotoSelectActivity.dilog.showDilog(ShareProfiles.this, "Collecting data to transfer");
+//        MultiPhotoSelectActivity.dilog.showDilog(ShareProfiles.this, "Collecting data to transfer");
 
         Thread mThread = new Thread() {
             @Override
@@ -222,7 +248,10 @@ public class ShareProfiles extends AppCompatActivity {
 
                 // todo dont allow next process if everything is empty
                 if (Students.isEmpty() && Asers.isEmpty() && Groups.isEmpty() && Crls.isEmpty()) {
-                    MultiPhotoSelectActivity.dilog.dismissDilog();
+//                    MultiPhotoSelectActivity.dilog.dismissDilog();
+                    if (pd != null)
+                        pd.dismiss();
+
                     runOnUiThread(new Runnable() {
                         public void run() {
                             Toast.makeText(ShareProfiles.this, "No New Data Found !!!", Toast.LENGTH_LONG).show();
@@ -243,7 +272,10 @@ public class ShareProfiles extends AppCompatActivity {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    MultiPhotoSelectActivity.dilog.dismissDilog();
+//                    MultiPhotoSelectActivity.dilog.dismissDilog();
+                    if (pd != null)
+                        pd.dismiss();
+
                     ShareProfiles.this.runOnUiThread(new Runnable() {
                         public void run() {
                             Toast.makeText(ShareProfiles.this, " Data collected Successfully !!!", Toast.LENGTH_SHORT).show();

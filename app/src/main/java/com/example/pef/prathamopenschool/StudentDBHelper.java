@@ -475,7 +475,7 @@ public class StudentDBHelper extends DBHelper {
     // replace null values with dummy
     public void replaceNulls() {
         database = getWritableDatabase();
-        Cursor cursor = database.rawQuery("UPDATE Student SET StudentID = IfNull(StudentID,'StudentID'), FirstName = IfNull(FirstName,'0'), MiddleName = IfNull(MiddleName,'0'), LastName = IfNull(LastName,'0'), Age = IfNull(Age,'0'), Class = IfNull(Class,'0'), UpdatedDate = IfNull(UpdatedDate,'0'), Gender = IfNull(Gender,'Male'), GroupID = IfNull(GroupID,'0'), CreatedBy = IfNull(CreatedBy,'0'), NewFlag= IfNull(NewFlag,'0'), StudentUID= IfNull(StudentUID,'0'), IsSelected= IfNull(IsSelected,'0') ,sharedBy = IfNull(sharedBy,'sharedBy') ,SharedAtDateTime = IfNull(SharedAtDateTime,'SharedAtDateTime') ,appVersion = IfNull(appVersion,'appVersion') ,appName = IfNull(appName,'appName') ,CreatedOn = IfNull(CreatedOn,'CreatedOn') ", null);
+        Cursor cursor = database.rawQuery("UPDATE Student SET StudentID = IfNull(StudentID,'StudentID'), FirstName = IfNull(FirstName,'0'), MiddleName = IfNull(MiddleName,'0'), LastName = IfNull(LastName,'0'), Age = IfNull(Age,'0'), Class = IfNull(Class,'0'), UpdatedDate = IfNull(UpdatedDate,'0'), Gender = IfNull(Gender,'Male'), GroupID = IfNull(GroupID,'0'), CreatedBy = IfNull(CreatedBy,'0'), NewFlag= IfNull(NewFlag,'0'), StudentUID= IfNull(StudentUID,'0'), IsSelected= IfNull(IsSelected,'0') ,sharedBy = IfNull(sharedBy,'') ,SharedAtDateTime = IfNull(SharedAtDateTime,'0') ,appVersion = IfNull(appVersion,'') ,appName = IfNull(appName,'') ,CreatedOn = IfNull(CreatedOn,'0') ", null);
         cursor.moveToFirst();
         cursor.close();
         database.close();
