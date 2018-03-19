@@ -227,13 +227,13 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnCom
                 btn_videoHint.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        // Video Watched
-                        videoHintWatched = 1;
                         // Play Video
                         String resSrc = splashScreenVideo.fpath + "Media/" + resourcePath;
                         File file = new File(resSrc);
                         Uri path = Uri.fromFile(file);
                         if (file.exists()) {
+                            // Video Watched
+                            videoHintWatched = 1;
                             // Video view
                             final Dialog dialog = new Dialog(MainActivity.this);
                             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
