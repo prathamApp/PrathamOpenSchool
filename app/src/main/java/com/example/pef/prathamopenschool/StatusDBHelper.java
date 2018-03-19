@@ -312,7 +312,7 @@ public class StatusDBHelper extends DBHelper {
             database = getWritableDatabase();
             List<String> list = new ArrayList<String>();
             {
-                Cursor cursor = database.rawQuery("SELECT StartDateTime FROM Scores WHERE Level = 99 AND GroupID = ? ", new String[]{selectedGroupId});
+                Cursor cursor = database.rawQuery("SELECT StartDateTime FROM Scores WHERE Level In (990,991)  AND GroupID = ? ", new String[]{selectedGroupId});
                 cursor.moveToFirst();
                 while (cursor.isAfterLast() == false) {
 

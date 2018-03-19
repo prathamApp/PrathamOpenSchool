@@ -136,6 +136,14 @@
                 android:scaleType="fitCenter" />
 
             <ImageButton
+                android:id="@+id/btn_videoHint"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:layout_marginLeft="128dp"
+                android:background="@drawable/video_hint"
+                android:scaleType="fitCenter" />
+
+            <ImageButton
                 android:id="@+id/btn_skip"
                 android:layout_width="96dp"
                 android:layout_height="96dp"

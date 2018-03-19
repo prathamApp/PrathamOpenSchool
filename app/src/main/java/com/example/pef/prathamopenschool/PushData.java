@@ -686,6 +686,14 @@ public class PushData extends AppCompatActivity {
         } else {
             Toast.makeText(c, "Problem in clearing score database", Toast.LENGTH_SHORT).show();
         }
+
+        LogsDBHelper LogsToDelete = new LogsDBHelper(c);
+        if (LogsToDelete.DeleteAll()) {
+            Toast.makeText(c, "Logs database cleared", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(c, "Problem in clearing Logs database", Toast.LENGTH_SHORT).show();
+        }
+
         BackupDatabase.backup(c);
     }
 

@@ -22,7 +22,7 @@ public class ScoreDBHelper extends DBHelper {
         try {
             Cursor cursor;
             database = getWritableDatabase();
-            cursor = database.rawQuery("select distinct GroupID from Scores where Level = 99", null);
+            cursor = database.rawQuery("select distinct GroupID from Scores where Level In (990,991)", null);
 
             return PopulateScoreListFromCursor(cursor);
 
@@ -225,7 +225,7 @@ public class ScoreDBHelper extends DBHelper {
             Cursor cursor;
             database = getWritableDatabase();
 //            cursor = database.rawQuery("select ResourceID, SUM(ScoredMarks) as ScoredMarks, SUM(TotalMarks) as TotalMarks from Scores where GroupID in ("+groupID+") and Level != 99", null);
-            cursor = database.rawQuery("select distinct GroupID from Scores where Level != 99", null);
+            cursor = database.rawQuery("select distinct GroupID from Scores where Level != 990 OR Level != 991", null);
 
             return PopulateScoreListFromCursor(cursor);
 

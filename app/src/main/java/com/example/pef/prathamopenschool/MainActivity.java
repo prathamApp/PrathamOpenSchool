@@ -8,6 +8,7 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -28,7 +29,10 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
 
@@ -47,7 +51,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private RecyclerView recyclerView, horizontalrecyclerView;
@@ -82,13 +86,15 @@ public class MainActivity extends AppCompatActivity {
     Button tv_opt1, tv_opt2, tv_opt3, tv_opt4;//, tv_result;
     //    RadioGroup rg_Opt;
 //    RadioButton rb_Opt1, rb_Opt2, rb_Opt3, rb_Opt4, selectedOption;
-    ImageButton btn_Submit, btn_Skip;
+    ImageButton btn_Submit, btn_Skip, btn_videoHint;
     AttendanceDBHelper attendanceDBHelper;
     String QueId, Question, QuestionType, Subject, Option1, Option2, Option3, Option4, Answer, resourceType, resourcePath, programLanguage;
     String aajKaSawaalStartTime;
     String selectedOption = "";
     int selectedBtn;
-
+    int videoHintWatched = 0;
+    private VideoView videoView;
+    MediaController mediaController;
 
     @TargetApi(Build.VERSION_CODES.M)
     @Override
@@ -160,6 +166,8 @@ public class MainActivity extends AppCompatActivity {
                 btn_Submit.setEnabled(false);
                 btn_Submit.setClickable(false);
 
+                // new changes
+                btn_videoHint = dialog.findViewById(R.id.btn_videoHint);
                 // Setting Dialog
                 dialog.setCanceledOnTouchOutside(false);
                 dialog.setCancelable(false);
@@ -214,6 +222,46 @@ public class MainActivity extends AppCompatActivity {
                 } catch (Exception e) {
                     e.getMessage();
                 }
+
+                // new changes
+                btn_videoHint.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // Video Watched
+                        videoHintWatched = 1;
+                        // Play Video
+                        String resSrc = splashScreenVideo.fpath + "Media/" + resourcePath;
+                        File file = new File(resSrc);
+                        Uri path = Uri.fromFile(file);
+                        if (file.exists()) {
+                            // Video view
+                            final Dialog dialog = new Dialog(MainActivity.this);
+                            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                            dialog.setContentView(R.layout.videoview_hint);
+                            dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+                            dialog.setCanceledOnTouchOutside(false);
+                            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                            dialog.show();
+
+                            videoView = dialog.findViewById(R.id.videoView);
+
+                            videoView.setOnPreparedListener(MainActivity.this);
+                            videoView.setOnCompletionListener(MainActivity.this);
+
+                            Runtime rs = Runtime.getRuntime();
+                            rs.freeMemory();
+                            rs.gc();
+                            rs.freeMemory();
+
+                            //Creating MediaController
+                            videoView.setVideoURI(path);
+                            videoView.requestFocus();
+
+                        } else {
+                            Toast.makeText(mContext, "Video not available !!!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
 
                 tv_opt1.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -306,6 +354,31 @@ public class MainActivity extends AppCompatActivity {
                         tv_opt3.setClickable(false);
                         tv_opt4.setClickable(false);
 
+                        // new changes
+                        // video watched or not then skip
+                        ScoreDBHelper score = new ScoreDBHelper(MainActivity.this);
+                        Score sc = new Score();
+
+                        boolean answer = false;
+                        sc.SessionID = MultiPhotoSelectActivity.sessionId;
+                        sc.ResourceID = resourceId;
+                        sc.QuestionId = Integer.parseInt(QueId);
+                        sc.TotalMarks = 0;
+                        // new changes
+                        sc.Level = Integer.valueOf(String.valueOf(99).concat(String.valueOf(videoHintWatched)));
+                        sc.StartTime = aajKaSawaalStartTime;
+                        sc.EndTime = Util.GetCurrentDateTime();
+                        String gid;
+                        gid = MultiPhotoSelectActivity.selectedGroupId;
+                        if (gid.contains(",")) gid = gid.split(",")[0];
+                        sc.GroupID = gid;
+                        String deviceId = Settings.Secure.getString(MainActivity.this.getContentResolver(), Settings.Secure.ANDROID_ID);
+                        sc.DeviceID = deviceId.equals(null) ? "0000" : deviceId;
+                        sc.ScoredMarks = 0;
+
+                        score.Add(sc);
+                        BackupDatabase.backup(MainActivity.this);
+
                         // Open Graph Activity
                         Intent graph = new Intent(MainActivity.this, AKSGraph.class);
                         startActivity(graph);
@@ -350,7 +423,8 @@ public class MainActivity extends AppCompatActivity {
                         sc.ResourceID = resourceId;
                         sc.QuestionId = Integer.parseInt(QueId);
                         sc.TotalMarks = 10;
-                        sc.Level = 99;
+                        // new changes
+                        sc.Level = Integer.valueOf(String.valueOf(99).concat(String.valueOf(videoHintWatched)));
                         sc.StartTime = aajKaSawaalStartTime;
                         sc.EndTime = Util.GetCurrentDateTime();
                         String gid;
@@ -451,8 +525,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }, 5000);
 
-                        }
-                        catch (Exception e){
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
 
@@ -681,6 +754,17 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onCompletion(MediaPlayer mediaPlayer) {
+
+    }
+
+    @Override
+    public void onPrepared(MediaPlayer mediaPlayer) {
+        if (!videoView.isPlaying())
+            videoView.start();
+    }
+
     /**
      * Adding few albums for testing
      * RecyclerView item decoration - give equal margin around grid item
@@ -776,6 +860,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+
         destroyed = false;
 
         MultiPhotoSelectActivity.pauseFlg = true;

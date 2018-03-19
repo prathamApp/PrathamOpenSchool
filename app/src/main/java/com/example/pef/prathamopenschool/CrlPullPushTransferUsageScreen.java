@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -231,27 +232,50 @@ public class CrlPullPushTransferUsageScreen extends AppCompatActivity {
     public void transferData(View v) {
 
         // Generate Json file
-        createJsonforTransfer();
+
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                progress = new ProgressDialog(CrlPullPushTransferUsageScreen.this);
+                progress.setMessage("Please Wait...");
+                progress.setCanceledOnTouchOutside(false);
+                progress.show();
+            }
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                createJsonforTransfer();
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                if (progress.isShowing())
+                    progress.dismiss();
 //************************** integrate push data code here********************/
 
-        String fileName = "";
+                String fileName = "";
 
-        ArrayList<String> arrayList = new ArrayList<String>();
-        TextView msg = (TextView) findViewById(R.id.message);
-        _array = new JSONArray();
-        TextView tv = (TextView) findViewById(R.id.message);
-        tv.setText("");
-        //  test();
-        //test function is used only for reading database file from assets
-        //Used when we want to push data from our side.
+                ArrayList<String> arrayList = new ArrayList<String>();
+                TextView msg = (TextView) findViewById(R.id.message);
+                _array = new JSONArray();
+                TextView tv = (TextView) findViewById(R.id.message);
+                tv.setText("");
+                //  test();
+                //test function is used only for reading database file from assets
+                //Used when we want to push data from our side.
 
-        //enableBlu();
-        progress = new ProgressDialog(CrlPullPushTransferUsageScreen.this);
-        progress.setMessage("Please Wait...");
-        progress.setCanceledOnTouchOutside(false);
-        progress.show();
+                //enableBlu();
+                progress = new ProgressDialog(CrlPullPushTransferUsageScreen.this);
+                progress.setMessage("Please Wait...");
+                progress.setCanceledOnTouchOutside(false);
+                progress.show();
 
-        TreansferFile("pushNewDataToServer-");
+                TreansferFile("pushNewDataToServer-");
+            }
+        }.execute();
 
         //Wont Work (Gets Executed Immediately)
         //Toast.makeText(c, "After Transfer File !!!", Toast.LENGTH_SHORT).show();
@@ -261,8 +285,8 @@ public class CrlPullPushTransferUsageScreen extends AppCompatActivity {
     public void createJsonforTransfer() {
         //we will push logs and scores directly to the server
 
-        TextView msg = (TextView) findViewById(R.id.message);
-        msg.setText("");
+//        TextView msg = (TextView) findViewById(R.id.message);
+//        msg.setText("");
 
         ScoreDBHelper scoreDBHelper = new ScoreDBHelper(this);
         List<Score> scores = scoreDBHelper.GetAll();
@@ -470,7 +494,7 @@ public class CrlPullPushTransferUsageScreen extends AppCompatActivity {
                                 aserObj.put("SharedAtDateTime", aserList.get(i).SharedAtDateTime == null ? "" : aserList.get(i).SharedAtDateTime);
                                 aserObj.put("appName", aserList.get(i).appName == null ? "" : aserList.get(i).appName);
                                 aserObj.put("appVersion", aserList.get(i).appVersion == null ? "" : aserList.get(i).appVersion);
-                                aserObj.put("CreatedOn", aserList.get(i).CreatedOn == null ? "" : groupsList.get(i).CreatedOn);
+                                aserObj.put("CreatedOn", aserList.get(i).CreatedOn == null ? "" : aserList.get(i).CreatedOn);
 
                                 aserData.put(aserObj);
                             }
@@ -501,7 +525,16 @@ public class CrlPullPushTransferUsageScreen extends AppCompatActivity {
                         obj.put("apkVersion", statusDBHelper.getValue("apkVersion"));
                         obj.put("appName", statusDBHelper.getValue("appName"));
 
-                        String requestString = "{ \"metadata\": " + obj + ", \"scoreData\": " + scoreData + ", \"LogsData\": " + logsData + ", \"attendanceData\": " + attendanceData + ", \"newStudentsData\": " + studentData + ", \"newCrlsData\": " + crlData + ", \"newGroupsData\": " + grpData + ", \"AserTableData\": " + aserData + "}";//Ketan
+                        String requestString = "{ " +
+                                "\"metadata\": " + obj + "," +
+                                " \"scoreData\": " + scoreData + ", " +
+                                "\"LogsData\": " + logsData + ", " +
+                                "\"attendanceData\": " + attendanceData + ", " +
+                                "\"newStudentsData\": " + studentData + ", " +
+                                "\"newCrlsData\": " + crlData + ", " +
+                                "\"newGroupsData\": " + grpData + ", " +
+                                "\"AserTableData\": " + aserData +
+                                "}";//Ketan
                         WriteSettings(c, requestString, "pushNewDataToServer-" + (deviceId.equals(null) ? "0000" : deviceId));
                     }
                 }
@@ -582,7 +615,8 @@ public class CrlPullPushTransferUsageScreen extends AppCompatActivity {
                     }
                 }
             } else {
-                progress.dismiss();
+                if (progress.isShowing())
+                    progress.dismiss();
                 Toast.makeText(getApplicationContext(), "File not found in transferredUsage content", Toast.LENGTH_LONG).show();
             }
         }
@@ -643,6 +677,13 @@ public class CrlPullPushTransferUsageScreen extends AppCompatActivity {
         } else {
             Toast.makeText(c, "Problem in clearing score database", Toast.LENGTH_SHORT).show();
         }
+
+        LogsDBHelper LogsToDelete = new LogsDBHelper(c);
+        if (LogsToDelete.DeleteAll()) {
+            Toast.makeText(c, "Logs database cleared", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(c, "Problem in clearing Logs database", Toast.LENGTH_SHORT).show();
+        }
         BackupDatabase.backup(c);
     }
 
@@ -687,4 +728,23 @@ public class CrlPullPushTransferUsageScreen extends AppCompatActivity {
     }
 
 
+    public void clearLogs(View view) {
+        new AlertDialog.Builder(this)
+                .setTitle("Clear Logs")
+                .setMessage("Do you really want to Clear Logs ?")
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        LogsDBHelper LogsToDelete = new LogsDBHelper(c);
+                        if (LogsToDelete.DeleteAll()) {
+                            Toast.makeText(c, "Logs database cleared", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(c, "Problem in clearing Logs database", Toast.LENGTH_SHORT).show();
+                        }
+                        BackupDatabase.backup(c);
+                    }
+                })
+                .setNegativeButton(android.R.string.no, null).show();
+    }
 }
