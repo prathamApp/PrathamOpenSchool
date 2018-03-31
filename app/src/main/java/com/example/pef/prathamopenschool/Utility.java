@@ -2,11 +2,11 @@ package com.example.pef.prathamopenschool;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.util.Log;
 
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.UUID;
@@ -21,15 +21,18 @@ public class Utility {
 
 
     public String GetCurrentDateTime() {
-        Calendar cal = Calendar.getInstance();
-        return dateFormat.format(cal.getTime());
+//        Calendar cal = Calendar.getInstance();
+//        return dateFormat.format(cal.getTime());
+        Log.d("GetCurrentDateTime ", "" + MyApplication.getAccurateTimeStamp());
+        return MyApplication.getAccurateTimeStamp();
     }
 
 
-
     public String GetCurrentDate() {
-        Calendar cal = Calendar.getInstance();
-        return dateFormat1.format(cal.getTime());
+//        Calendar cal = Calendar.getInstance();
+//        return dateFormat1.format(cal.getTime());
+        Log.d("GetDate ", "" + MyApplication.getAccurateDate());
+        return MyApplication.getAccurateDate();
     }
 
     public UUID GetUniqueID() {

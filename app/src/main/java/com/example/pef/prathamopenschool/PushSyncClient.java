@@ -7,6 +7,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Process;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -86,7 +87,11 @@ public class PushSyncClient extends AsyncTask<ArrayList<String>, Void, ArrayList
 
             if (resultFromServer.equals("Success")) {
                 result.add("Success");
-            } else result.add(resultFromServer);
+                Log.d("PushStatus : ", "success ");
+            } else {
+                result.add(resultFromServer);
+                Log.d("PushStatus : ", "failed ");
+            }
 
             return result;
         } else {

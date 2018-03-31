@@ -1,6 +1,5 @@
 package com.example.pef.prathamopenschool;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -36,12 +35,15 @@ public class AdminActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
 
-        MainActivity.sessionFlg=false;
-        sessionContex=this;
+        MainActivity.sessionFlg = false;
+        sessionContex = this;
         playVideo = new PlayVideo();
 
         // Hide Actionbar
         getSupportActionBar().hide();
+
+//        Toast.makeText(this, "TimeStamp = " + MyApplication.getAccurateTimeStamp(), Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, "Date = " + MyApplication.getAccurateDate(), Toast.LENGTH_LONG).show();
 
         // Displaying Version Code of App
         tv_version_code = (TextView) findViewById(R.id.tv_Version);
@@ -72,7 +74,6 @@ public class AdminActivity extends AppCompatActivity {
                 String enteredPassWord = edtPass.getText().toString();
 
 
-
                 boolean result;
                 result = db.CrlLogin(enteredUserName, enteredPassWord);
 
@@ -84,7 +85,7 @@ public class AdminActivity extends AppCompatActivity {
                     // Writing Created by in Status Table
                     StatusDBHelper sdb;
                     sdb = new StatusDBHelper(context);
-                    sdb.Update("CRL",crlID);
+                    sdb.Update("CRL", crlID);
 
 
                     Intent intent = new Intent(AdminActivity.this, CrlDashboard.class);
@@ -131,9 +132,9 @@ public class AdminActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent main = new Intent(AdminActivity.this, MultiPhotoSelectActivity.class);
-        main.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(main);
+//        Intent main = new Intent(AdminActivity.this, MultiPhotoSelectActivity.class);
+//        main.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        startActivity(main);
         finish();
 
     }
@@ -141,9 +142,9 @@ public class AdminActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(MultiPhotoSelectActivity.pauseFlg){
+        if (MultiPhotoSelectActivity.pauseFlg) {
             MultiPhotoSelectActivity.cd.cancel();
-            MultiPhotoSelectActivity.pauseFlg=false;
+            MultiPhotoSelectActivity.pauseFlg = false;
             MultiPhotoSelectActivity.duration = MultiPhotoSelectActivity.timeout;
         }
     }
@@ -152,21 +153,21 @@ public class AdminActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
-        MultiPhotoSelectActivity.pauseFlg=true;
+        MultiPhotoSelectActivity.pauseFlg = true;
 
         MultiPhotoSelectActivity.cd = new CountDownTimer(MultiPhotoSelectActivity.duration, 1000) {
             //cd = new CountDownTimer(duration, 1000) {
             @Override
-            public void onTick(long millisUntilFinished)
-            {
-                MultiPhotoSelectActivity.duration= millisUntilFinished;
+            public void onTick(long millisUntilFinished) {
+                MultiPhotoSelectActivity.duration = millisUntilFinished;
                 timer = true;
             }
+
             @Override
             public void onFinish() {
                 timer = false;
-                MainActivity.sessionFlg=true;
-                if(!CardAdapter.vidFlg) {
+                MainActivity.sessionFlg = true;
+                if (!CardAdapter.vidFlg) {
                     scoreDBHelper = new ScoreDBHelper(sessionContex);
                     playVideo.calculateEndTime(scoreDBHelper);
                     BackupDatabase.backup(sessionContex);

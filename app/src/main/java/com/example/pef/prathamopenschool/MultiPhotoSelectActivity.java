@@ -242,8 +242,9 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
         }
 
         // Timer Start
-
-        if (latitudeAvailable == false || longitudeAvailable == false || GPSDateTimeAvailable == false) {
+        // Todo get GPS DateTime & Location
+//        if (latitudeAvailable == false || longitudeAvailable == false || GPSDateTimeAvailable == false) {
+        if (true) {
             // Execute GPS Location & Time Dialog
             // GPS Signal Dialog
             gpsTimeDialog = new Dialog(this);
@@ -380,15 +381,6 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
             }
         };
         mainThreadHandler.postDelayed(delayedTask, 60000);
-    }
-
-
-    public static boolean isTimeAutomatic(Context c) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            return Settings.Global.getInt(c.getContentResolver(), Settings.Global.AUTO_TIME, 0) == 1;
-        } else {
-            return android.provider.Settings.System.getInt(c.getContentResolver(), android.provider.Settings.System.AUTO_TIME, 0) == 1;
-        }
     }
 
 
@@ -1018,7 +1010,7 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Intent goToAdminLogin = new Intent(MultiPhotoSelectActivity.this, AdminActivity.class);
-            finish();
+//            finish();
             startActivity(goToAdminLogin);
         }
 
@@ -1059,27 +1051,6 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
     protected void onResume() {
         super.onResume();
 
-        // turn off auto date timed
-        boolean timeAutomatic = isTimeAutomatic(MultiPhotoSelectActivity.this);
-
-        if (timeAutomatic) {
-            // Auto Time
-        } else {
-            // Manual Time (Off)
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Select GPS Time from Settings")
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setMessage("Please click on \"Use network-provided time\" from \"Automatic date & time\" option !!!")
-                    .setCancelable(false)
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            startActivity(new Intent(android.provider.Settings.ACTION_DATE_SETTINGS));
-                        }
-                    });
-            AlertDialog alert = builder.create();
-            alert.show();
-        }
-
         // Check if location & gpstime is available
         StatusDBHelper s = new StatusDBHelper(MultiPhotoSelectActivity.this);
         boolean latitudeAvailable = false;
@@ -1090,24 +1061,20 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
         longitudeAvailable = s.initialDataAvailable("Longitude");
         GPSTimeAvailable = s.initialDataAvailable("GPSTime");
 
-        if (latitudeAvailable == false || longitudeAvailable == false || GPSTimeAvailable == false) {
+//        if (latitudeAvailable == false || longitudeAvailable == false || GPSTimeAvailable == false) {
+        if (true) {
             addStatusListener();
             addNmeaListener();
             if (!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 promptEnableGps();
             }
-
-
             /**
              * Check preferences to see how these componenets should be initialized
              */
-
             checkTimeAndDistance(null);
-
             if (GpsTestUtil.isGnssStatusListenerSupported()) {
                 addGnssMeasurementsListener();
             }
-
             if (GpsTestUtil.isGnssStatusListenerSupported()) {
                 addNavMessageListener();
             }
@@ -1732,9 +1699,19 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
         if (GPSDateTimeAvailable == false) {
             s = new StatusDBHelper(MultiPhotoSelectActivity.this);
             s.insertInitialData("GPSDateTime", gpsDateTime);
+
+            // Reset Timer
+            MyApplication.resetTimer();
+
+            MyApplication.startTimer();
         } else {
             s = new StatusDBHelper(MultiPhotoSelectActivity.this);
             s.Update("GPSDateTime", gpsDateTime);
+
+            // Reset Timer
+            MyApplication.resetTimer();
+
+            MyApplication.startTimer();
         }
 
         BackupDatabase.backup(MultiPhotoSelectActivity.this);
