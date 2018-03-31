@@ -315,7 +315,6 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
         studentDBHelper = new StudentDBHelper(this);
         groupDBHelper = new GroupDBHelper(this);
         utility = new Utility();
-        sessionStartTime = utility.GetCurrentDateTime();
 
         sessionId = utility.GetUniqueID().toString();
         sessionContex = this;
@@ -1721,6 +1720,12 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
             if (gpsTimeDialog.isShowing())
                 gpsTimeDialog.dismiss();
         }
+
+        // todo problem
+        Log.d("before : ", "GetCurrentDateTime ");
+        sessionStartTime = utility.GetCurrentDateTime();
+        Log.d("beforeafter : ", "GetCurrentDateTime ");
+
     }
 
     public void onStatusChanged(String provider, int status, Bundle extras) {
