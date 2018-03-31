@@ -1726,6 +1726,8 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
         sessionStartTime = utility.GetCurrentDateTime();
         Log.d("beforeafter : ", "GetCurrentDateTime ");
 
+        // stop getting location
+        gpsStop();
     }
 
     public void onStatusChanged(String provider, int status, Bundle extras) {
