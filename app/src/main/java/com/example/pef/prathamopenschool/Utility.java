@@ -18,6 +18,7 @@ import java.util.UUID;
 public class Utility {
 
     private final DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH);
+    private final DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.ENGLISH);
     private final DateFormat dateFormat1 = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
 
 
@@ -25,7 +26,7 @@ public class Utility {
         if (getSysTime) {
             //
             Calendar cal = Calendar.getInstance();
-            return dateFormat.format(cal.getTime());
+            return timeFormat.format(cal.getTime());
         }else {
             //
             Log.d("GetCurrentDateTime ", "" + MyApplication.getAccurateTimeStamp());

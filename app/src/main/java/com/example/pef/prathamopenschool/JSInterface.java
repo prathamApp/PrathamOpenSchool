@@ -12,6 +12,7 @@ import android.os.Environment;
 import android.provider.Settings;
 import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
+import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.widget.RadioGroup;
@@ -26,6 +27,9 @@ import java.io.FileInputStream;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 public class JSInterface extends Activity {
     static Context mContext;
@@ -470,11 +474,28 @@ public class JSInterface extends Activity {
                 splitedTime = splited[1].split("\\:+");
                 customDate = formatCustomDate(splitedDate, "-");
                 customTime = formatCustomDate(splitedTime, ":");
-                score.StartTime = customDate + " " + customTime;
+
+//                score.StartTime = customDate + " " + customTime;
+
                 String systime = Util.GetCurrentDateTime(true);  //here we get sys time
 
-                //SimpleDateFormat sdf = new SimpleDateFormat("dd-mm-yyyy");
-//                String deviceId = statusDBHelper.getValue("deviceId");
+                String[] gps = Util.GetCurrentDateTime(false).split(" ");
+
+                SimpleDateFormat sdfForTime = new SimpleDateFormat("HH:mm:ss");
+                long diff = (sdfForTime.parse(systime).getTime() - sdfForTime.parse(customTime).getTime());/*
+                Log.d("score_time::", gps[0] + "::::" + gps[1] + "::::" + customDate + "::::" + customTime + "::::" + systime);
+                Log.d("start_time::", ""+diff);*/
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(sdfForTime.parse(gps[1]));
+                long diffSeconds = diff / 1000 % 60;
+                cal.add(Calendar.SECOND, (int) -diffSeconds);
+                score.StartTime=  gps[0]+" "
+                        +((cal.get(Calendar.HOUR_OF_DAY) < 10) ? "0" : "")+ cal.get(Calendar.HOUR_OF_DAY) +":"
+                        +((cal.get(Calendar.MINUTE) < 10) ? "0" : "")+ cal.get(Calendar.MINUTE)+":"
+                        +((cal.get(Calendar.SECOND) < 10) ? "0" : "")+ cal.get(Calendar.SECOND);
+
+//                Log.d("format_time::", ""+cal.get(Calendar.HOUR_OF_DAY)+":"+cal.get(Calendar.MINUTE)+":"+cal.get(Calendar.SECOND));
+
                 String gid = MultiPhotoSelectActivity.selectedGroupsScore;
                 if (gid.contains(","))
                     gid = gid.split(",")[0];
@@ -501,7 +522,8 @@ public class JSInterface extends Activity {
                     splitedTime = splited[1].split("\\:+");
                     customDate = formatCustomDate(splitedDate, "-");
                     customTime = formatCustomDate(splitedTime, ":");
-                    assessment.StartTime = customDate + " " + customTime;
+//                    assessment.StartTime = customDate + " " + customTime;
+                    assessment.StartTime = score.StartTime;
 
                     String studId = attendanceDBHelper.GetStudentId(MultiPhotoSelectActivity.sessionId);
 
