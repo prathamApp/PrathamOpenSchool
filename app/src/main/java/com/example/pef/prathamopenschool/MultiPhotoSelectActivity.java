@@ -175,6 +175,9 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
 
     Dialog gpsTimeDialog;
     TextView tv_msg, tv_msgBottom;
+    boolean appName = false;
+    StatusDBHelper s;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -184,7 +187,7 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
         myView = (RelativeLayout) findViewById(R.id.my_layoutId);
 
         // Check if location & gpstime is available
-        StatusDBHelper s = new StatusDBHelper(MultiPhotoSelectActivity.this);
+        s = new StatusDBHelper(MultiPhotoSelectActivity.this);
         boolean latitudeAvailable = false;
         boolean longitudeAvailable = false;
         boolean GPSDateTimeAvailable = false;
@@ -192,7 +195,6 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
         boolean androidIDAvailable = false;
         boolean SerialIDAvailable = false;
         boolean apkVersion = false;
-        boolean appName = false;
 
         latitudeAvailable = s.initialDataAvailable("Latitude");
         longitudeAvailable = s.initialDataAvailable("Longitude");
@@ -325,47 +327,6 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
 
         // Generate Unique Device ID
         deviceID = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-        displayStudents();
-        setLanguage();
-
-        // set Title according to program
-        if (MultiPhotoSelectActivity.programID.equals("1"))
-            setTitle("Pratham Digital - H Learning");
-        else if (MultiPhotoSelectActivity.programID.equals("2"))
-            setTitle("Pratham Digital - Read India");
-        else if (MultiPhotoSelectActivity.programID.equals("3"))
-            setTitle("Pratham Digital - Second Chance");
-        else if (MultiPhotoSelectActivity.programID.equals("4"))
-            setTitle("Pratham Digital - Pratham Institute");
-
-
-        if (appName == false) {
-            s = new StatusDBHelper(MultiPhotoSelectActivity.this);
-            // app name
-            if (MultiPhotoSelectActivity.programID.equals("1"))
-                s.insertInitialData("appName", "Pratham Digital - H Learning");
-            else if (MultiPhotoSelectActivity.programID.equals("2"))
-                s.insertInitialData("appName", "Pratham Digital - Read India");
-            else if (MultiPhotoSelectActivity.programID.equals("3"))
-                s.insertInitialData("appName", "Pratham Digital - Second Chance");
-            else if (MultiPhotoSelectActivity.programID.equals("4"))
-                s.insertInitialData("appName", "Pratham Digital - Pratham Institute");
-
-        } else {
-            s = new StatusDBHelper(MultiPhotoSelectActivity.this);
-            // app name
-            if (MultiPhotoSelectActivity.programID.equals("1"))
-                s.Update("appName", "Pratham Digital - H Learning");
-            else if (MultiPhotoSelectActivity.programID.equals("2"))
-                s.Update("appName", "Pratham Digital - Read India");
-            else if (MultiPhotoSelectActivity.programID.equals("3"))
-                s.Update("appName", "Pratham Digital - Second Chance");
-            else if (MultiPhotoSelectActivity.programID.equals("4"))
-                s.Update("appName", "Pratham Digital - Pratham Institute");
-
-        }
-
-        BackupDatabase.backup(MultiPhotoSelectActivity.this);
     }
 
     private static final Handler mainThreadHandler = new Handler(Looper.getMainLooper());
@@ -1049,6 +1010,49 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
     @Override
     protected void onResume() {
         super.onResume();
+
+        displayStudents();
+        setLanguage();
+
+        // set Title according to program
+        if (MultiPhotoSelectActivity.programID.equals("1"))
+            setTitle("Pratham Digital - H Learning");
+        else if (MultiPhotoSelectActivity.programID.equals("2"))
+            setTitle("Pratham Digital - Read India");
+        else if (MultiPhotoSelectActivity.programID.equals("3"))
+            setTitle("Pratham Digital - Second Chance");
+        else if (MultiPhotoSelectActivity.programID.equals("4"))
+            setTitle("Pratham Digital - Pratham Institute");
+
+
+        if (appName == false) {
+            s = new StatusDBHelper(MultiPhotoSelectActivity.this);
+            // app name
+            if (MultiPhotoSelectActivity.programID.equals("1"))
+                s.insertInitialData("appName", "Pratham Digital - H Learning");
+            else if (MultiPhotoSelectActivity.programID.equals("2"))
+                s.insertInitialData("appName", "Pratham Digital - Read India");
+            else if (MultiPhotoSelectActivity.programID.equals("3"))
+                s.insertInitialData("appName", "Pratham Digital - Second Chance");
+            else if (MultiPhotoSelectActivity.programID.equals("4"))
+                s.insertInitialData("appName", "Pratham Digital - Pratham Institute");
+
+        } else {
+            s = new StatusDBHelper(MultiPhotoSelectActivity.this);
+            // app name
+            if (MultiPhotoSelectActivity.programID.equals("1"))
+                s.Update("appName", "Pratham Digital - H Learning");
+            else if (MultiPhotoSelectActivity.programID.equals("2"))
+                s.Update("appName", "Pratham Digital - Read India");
+            else if (MultiPhotoSelectActivity.programID.equals("3"))
+                s.Update("appName", "Pratham Digital - Second Chance");
+            else if (MultiPhotoSelectActivity.programID.equals("4"))
+                s.Update("appName", "Pratham Digital - Pratham Institute");
+
+        }
+
+        BackupDatabase.backup(MultiPhotoSelectActivity.this);
+
 
         // Check if location & gpstime is available
         StatusDBHelper s = new StatusDBHelper(MultiPhotoSelectActivity.this);
