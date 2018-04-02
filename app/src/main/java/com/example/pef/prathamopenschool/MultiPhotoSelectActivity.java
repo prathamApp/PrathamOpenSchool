@@ -184,7 +184,8 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.group_select);
-        myView = (RelativeLayout) findViewById(R.id.my_layoutId);
+//        myView = (RelativeLayout) findViewById(R.id.my_layoutId);
+//        radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
 
         // Check if location & gpstime is available
         s = new StatusDBHelper(MultiPhotoSelectActivity.this);
@@ -240,7 +241,6 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
                 e.printStackTrace();
             }
             s.Update("apkVersion", verCode);
-
         }
 
         // Timer Start
@@ -307,7 +307,7 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
         }
         startService(new Intent(this, WebViewService.class));
 
-        tv_title = (TextView) findViewById(R.id.tv_select);
+//        tv_title = (TextView) findViewById(R.id.tv_select);
 
         dilog = new DilogBoxForProcess();
         grpSelectFlag = true;
@@ -360,7 +360,6 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
 
             if (programID.equals("1") || programID.equals("2") || programID.equals("3") || programID.equals("4")) {
                 next = (Button) findViewById(R.id.goNext);
-                radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
                 if (programID.equals("1") || programID.equals("3") || programID.equals("4")) {
                     next.setText("Select Groups");
                 } else {
@@ -982,8 +981,10 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
         if (grpSelectFlag)
             super.onBackPressed();
         else {
-            finish();
-            startActivity(getIntent());
+//            finish();
+//            startActivity(getIntent());
+            setContentView(R.layout.group_select);
+            onResume();
         }
     }
     /*@Override
@@ -1010,7 +1011,14 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
     @Override
     protected void onResume() {
         super.onResume();
+        myView = (RelativeLayout) findViewById(R.id.my_layoutId);
+        radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
+        tv_title = (TextView) findViewById(R.id.tv_select);
+        next = (Button) findViewById(R.id.goNext);
 
+        if (radioGroup.getChildCount() > 0) {
+            radioGroup.removeAllViews();
+        }
         displayStudents();
         setLanguage();
 

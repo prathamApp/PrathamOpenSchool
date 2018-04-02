@@ -310,4 +310,9 @@ public class CrlAddEditScreen extends AppCompatActivity {
         }.start();
 
     }
+
+    public void goToSwapStudents(View view) {
+        Intent goToSwapStudents = new Intent(CrlAddEditScreen.this, SwapStudents.class);
+        startActivity(goToSwapStudents);
+    }
 }

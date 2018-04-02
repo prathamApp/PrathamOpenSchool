@@ -116,14 +116,38 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/Line3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical"
+        android:layout_below="@id/Line2"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:layout_below="@+id/Line2"
-        android:layout_alignStart="@+id/Line2">
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_swapStudents"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:background="@color/button"
+            android:onClick="goToSwapStudents"
+            android:text="Swap Students"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/Line4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/Line2"
+        android:layout_below="@+id/Line3"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:gravity="center"
+        android:orientation="vertical">
 
 
         <TextView
@@ -132,11 +156,11 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:padding="4dp"
             android:layout_marginTop="16dp"
             android:background="@color/button"
             android:gravity="center"
             android:onClick="goToSelectUnitForEdit"
+            android:padding="4dp"
             android:text="Data Analysis  ( Tip : Tap record to edit. )"
             android:textAllCaps="false"
             android:textColor="#FFFFFF"
