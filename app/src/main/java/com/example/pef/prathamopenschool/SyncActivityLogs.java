@@ -1,7 +1,6 @@
 package com.example.pef.prathamopenschool;
 
 import android.content.Context;
-import android.provider.Settings;
 import android.telephony.TelephonyManager;
 
 public class SyncActivityLogs extends DBHelper {
@@ -19,7 +18,7 @@ public class SyncActivityLogs extends DBHelper {
 
     public void addToDB(String method, Exception e, String type) {
 
-        contentValues.put("CurrentDateTime", Util.GetCurrentDateTime());
+        contentValues.put("CurrentDateTime", Util.GetCurrentDateTime(false));
         contentValues.put("ExceptionMsg", e.getMessage());
         contentValues.put("ExceptionStackTrace", e.getStackTrace().toString());
         contentValues.put("MethodName", method);

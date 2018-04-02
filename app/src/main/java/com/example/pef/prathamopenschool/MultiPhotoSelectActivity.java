@@ -1727,7 +1727,7 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
 
         // todo problem
         Log.d("before : ", "GetCurrentDateTime ");
-        sessionStartTime = utility.GetCurrentDateTime();
+        sessionStartTime = utility.GetCurrentDateTime(false);
         Log.d("beforeafter : ", "GetCurrentDateTime ");
 
         // stop getting location

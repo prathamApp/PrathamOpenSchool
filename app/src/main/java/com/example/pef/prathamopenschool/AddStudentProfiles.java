@@ -4,12 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.provider.DocumentFile;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,7 +22,6 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.util.List;
 import java.util.UUID;
 
@@ -226,14 +223,14 @@ public class AddStudentProfiles extends AppCompatActivity {
                             stdObj.LastName = edt_Lname.getText().toString();
                             stdObj.Age = Integer.parseInt(String.valueOf(edt_Age.getText()));
                             stdObj.Class = Integer.parseInt(String.valueOf(edt_Class.getText()));
-                            stdObj.UpdatedDate = Util.GetCurrentDateTime();
+                            stdObj.UpdatedDate = Util.GetCurrentDateTime(false);
                             stdObj.Gender = gender;
                             stdObj.GroupID = GrpID;
                             stdObj.CreatedBy = statdb.getValue("CRL");
                             stdObj.newStudent = true;
                             stdObj.StudentUID = "";
                             stdObj.IsSelected = true;
-                            stdObj.CreatedOn = util.GetCurrentDateTime().toString();
+                            stdObj.CreatedOn = util.GetCurrentDateTime(false).toString();
 
                             sdb.insertData(stdObj);
 

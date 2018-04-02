@@ -754,7 +754,7 @@ public class UniversalChildFormFragment extends Fragment implements DataInterfac
                                 std.CreatedBy = statdb.getValue("CRL");
                                 std.StudentUID = EditedChild;
                                 std.IsSelected = isSelected;
-                                std.CreatedOn = new Utility().GetCurrentDateTime();
+                                std.CreatedOn = new Utility().GetCurrentDateTime(false);
 
                                 sdb.insertUniversalChildData(std);
 
@@ -787,7 +787,7 @@ public class UniversalChildFormFragment extends Fragment implements DataInterfac
                                 int wSub = bwpSub ? 1 : 0;
                                 int isSelected = bswIC ? 1 : 0;
 
-                                asr.CreatedOn = new Utility().GetCurrentDateTime();
+                                asr.CreatedOn = new Utility().GetCurrentDateTime(false);
 
 
                                 // testT0 = Baseline, testT1 = Endline1, testT2 = Endline2, testT3 = Endline3, testT4 = Endline4
@@ -964,7 +964,7 @@ public class UniversalChildFormFragment extends Fragment implements DataInterfac
                                         std.CreatedBy = statdb.getValue("CRL");
                                         std.StudentUID = EditedChild;
                                         std.IsSelected = isSelected;
-                                        std.CreatedOn = new Utility().GetCurrentDateTime();
+                                        std.CreatedOn = new Utility().GetCurrentDateTime(false);
 
                                         sdb.insertUniversalChildData(std);
 
@@ -997,7 +997,7 @@ public class UniversalChildFormFragment extends Fragment implements DataInterfac
                                         int wSub = bwpSub ? 1 : 0;
                                         int isSelected = bswIC ? 1 : 0;
 
-                                        asr.CreatedOn = new Utility().GetCurrentDateTime();
+                                        asr.CreatedOn = new Utility().GetCurrentDateTime(false);
 
                                         // testT0 = Baseline, testT1 = Endline1, testT2 = Endline2, testT3 = Endline3, testT4 = Endline4
                                         // if exists replace else insert

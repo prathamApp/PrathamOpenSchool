@@ -231,7 +231,7 @@ public class AssignGroups extends AppCompatActivity {
                                     statusDBHelper.updateTrailerCountbyGroupID(0, group5);
                                     statusDBHelper.Update("village", Integer.toString(vilID));
                                     statusDBHelper.Update("deviceId", deviceIMEI.equals(null) ? "0000" : deviceIMEI);
-                                    statusDBHelper.Update("ActivatedDate", new Utility().GetCurrentDateTime());
+                                    statusDBHelper.Update("ActivatedDate", new Utility().GetCurrentDateTime(false));
                                     statusDBHelper.Update("ActivatedForGroups", group1 + "," + group2 + "," + group3 + "," + group4 + "," + group5);
                                     BackupDatabase.backup(getApplicationContext());
                                     /*StatusDBHelper statusDBHelper2 = new StatusDBHelper(context);

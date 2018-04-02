@@ -32,7 +32,7 @@ public class videoTracking {
 
             Boolean _wasSuccessful = null;
             Utility util=new Utility();
-            String endTime = util.GetCurrentDateTime();
+            String endTime = util.GetCurrentDateTime(false);
 
             if(resId.equals(null) || MainActivity.startTime.equals("undefined")){
                 SyncActivityLogs syncActivityLogs=new SyncActivityLogs(c);

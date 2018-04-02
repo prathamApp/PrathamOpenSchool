@@ -124,7 +124,7 @@ public class AddNewGroup extends AppCompatActivity {
                         grpobj.VillageName = "";
                         grpobj.SchoolName = "";
                         grpobj.newGroup = true;
-                        grpobj.CreatedOn = util.GetCurrentDateTime().toString();
+                        grpobj.CreatedOn = util.GetCurrentDateTime(false).toString();
 
                         gdb.insertData(grpobj);
                         Toast.makeText(AddNewGroup.this, "Record Inserted Successfully !!!", Toast.LENGTH_SHORT).show();

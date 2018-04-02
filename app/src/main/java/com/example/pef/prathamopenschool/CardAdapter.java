@@ -223,7 +223,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
                     resId = tempresId;
                     File file = new File(resSrc);
                     Uri path = Uri.fromFile(file);
-                    String myDateTime = util.GetCurrentDateTime();
+                    String myDateTime = util.GetCurrentDateTime(false);
                     if (file.exists()) {
                         Intent intent = new Intent(mContext, PlayVideo.class);
                         intent.putExtra("path", path.toString());
@@ -247,7 +247,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.MyViewHolder> 
                     resId = tempresId;
                     File file = new File(resSrc);
                     Uri path = Uri.fromFile(file);
-                    String myDateTime = util.GetCurrentDateTime();
+                    String myDateTime = util.GetCurrentDateTime(false);
                     if (file.exists()) {
                         Intent intent = new Intent(mContext, PlayVideo.class);
                         intent.putExtra("path", path.toString());

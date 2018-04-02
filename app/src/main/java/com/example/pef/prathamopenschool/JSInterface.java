@@ -12,7 +12,6 @@ import android.os.Environment;
 import android.provider.Settings;
 import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
-import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.widget.RadioGroup;
@@ -27,12 +26,6 @@ import java.io.FileInputStream;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 
 public class JSInterface extends Activity {
     static Context mContext;
@@ -260,7 +253,7 @@ public class JSInterface extends Activity {
             }
         } catch (Exception e) {
             e.printStackTrace();
-/*            log.error("Exception occurred at : " + e.getMessage());*/
+            /*            log.error("Exception occurred at : " + e.getMessage());*/
         }
     }
 
@@ -472,24 +465,26 @@ public class JSInterface extends Activity {
                 score.ScoredMarks = scorefromGame;
                 score.TotalMarks = totalMarks;
 
-                splited     = startTime.split("\\s+");
+                splited = startTime.split("\\s+");
                 splitedDate = splited[0].split("\\-+");
                 splitedTime = splited[1].split("\\:+");
-                customDate    = formatCustomDate(splitedDate,"-");
-                customTime    = formatCustomDate(splitedTime,":");
-                score.StartTime      = customDate+" "+customTime;
+                customDate = formatCustomDate(splitedDate, "-");
+                customTime = formatCustomDate(splitedTime, ":");
+                score.StartTime = customDate + " " + customTime;
+                String systime = Util.GetCurrentDateTime(true);  //here we get sys time
 
                 //SimpleDateFormat sdf = new SimpleDateFormat("dd-mm-yyyy");
 //                String deviceId = statusDBHelper.getValue("deviceId");
                 String gid = MultiPhotoSelectActivity.selectedGroupsScore;
-                if(gid.contains(","))
+                if (gid.contains(","))
                     gid = gid.split(",")[0];
                 score.GroupID = gid;//ketan 17/6/17
 //                if (deviceId.equals("") || deviceId.contains("111111111111111")) {
                 String deviceId = Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ANDROID_ID);
 //                }
                 score.DeviceID = deviceId.equals(null) ? "0000" : deviceId;
-                score.EndTime = Util.GetCurrentDateTime();
+                score.EndTime = Util.GetCurrentDateTime(false);  //here we get gps time
+                //calculation
                 score.Level = level;
                 _wasSuccessful = scoreDBHelper.Add(score);
 
@@ -501,18 +496,18 @@ public class JSInterface extends Activity {
                     assessment.ScoredMarks = scorefromGame;
                     assessment.TotalMarks = totalMarks;
 
-                    splited     = startTime.split("\\s+");
+                    splited = startTime.split("\\s+");
                     splitedDate = splited[0].split("\\-+");
                     splitedTime = splited[1].split("\\:+");
-                    customDate    = formatCustomDate(splitedDate,"-");
-                    customTime    = formatCustomDate(splitedTime,":");
-                    assessment.StartTime = customDate+" "+customTime;
+                    customDate = formatCustomDate(splitedDate, "-");
+                    customTime = formatCustomDate(splitedTime, ":");
+                    assessment.StartTime = customDate + " " + customTime;
 
                     String studId = attendanceDBHelper.GetStudentId(MultiPhotoSelectActivity.sessionId);
 
                     assessment.GroupID = studId;//ketan 17/6/17
                     assessment.DeviceID = WebViewActivity.resName;
-                    assessment.EndTime = Util.GetCurrentDateTime();
+                    assessment.EndTime = Util.GetCurrentDateTime(false);
                     assessment.Level = level;
                     assessment.LessonSession = MainActivity.lessonSession;
                     _wasSuccessful = assessmentDBHelper.Add(assessment);
@@ -528,13 +523,13 @@ public class JSInterface extends Activity {
 
     }
 
-    public String formatCustomDate(String[] splitedDate, String delimiter){
-        for (int k=0;k<splitedDate.length;k++) {
+    public String formatCustomDate(String[] splitedDate, String delimiter) {
+        for (int k = 0; k < splitedDate.length; k++) {
             if (Integer.parseInt(splitedDate[k]) < 10) {
-                splitedDate[k]= "0"+splitedDate[k];
+                splitedDate[k] = "0" + splitedDate[k];
             }
         }
-        return TextUtils.join(delimiter,splitedDate);
+        return TextUtils.join(delimiter, splitedDate);
     }
 
     @JavascriptInterface

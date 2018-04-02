@@ -5,10 +5,8 @@ import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.PowerManager;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.WindowManager;
@@ -85,14 +83,14 @@ public class PlayVideo extends Activity implements MediaPlayer.OnCompletionListe
             vidDuration = myVideoView.getDuration();
             res_id = CardAdapter.resId;
         } else if (assessmentLogin.assessmentFlg) {
-            videoStartTime = util.GetCurrentDateTime();
+            videoStartTime = util.GetCurrentDateTime(false);
             res_id = "Assessment-" + assessmentLogin.crlID;
             assessmentLogin.assessmentFlg = false;
         }
 
         try {
             Boolean _wasSuccessful = null;
-            String endTime = util.GetCurrentDateTime();
+            String endTime = util.GetCurrentDateTime(false);
 
 //            statusDBHelper = new StatusDBHelper(getApplicationContext());
 

@@ -409,7 +409,7 @@ public class ShareProfiles extends AppCompatActivity {
                         // new entries
                         stat = new StatusDBHelper(ShareProfiles.this);
                         stdObj.put("sharedBy", stat.getValue("AndroidID"));
-                        stdObj.put("SharedAtDateTime", util.GetCurrentDateTime().toString());
+                        stdObj.put("SharedAtDateTime", util.GetCurrentDateTime(false).toString());
                         stdObj.put("appVersion", stat.getValue("apkVersion"));
                         stdObj.put("appName", stat.getValue("appName"));
                         stdObj.put("CreatedOn", std.CreatedOn == null ? "" : std.CreatedOn);
@@ -456,7 +456,7 @@ public class ShareProfiles extends AppCompatActivity {
                     // new entries
                     stat = new StatusDBHelper(ShareProfiles.this);
                     crlObj.put("sharedBy", stat.getValue("AndroidID"));
-                    crlObj.put("SharedAtDateTime", util.GetCurrentDateTime().toString());
+                    crlObj.put("SharedAtDateTime", util.GetCurrentDateTime(false).toString());
                     crlObj.put("appVersion", stat.getValue("apkVersion"));
                     crlObj.put("appName", stat.getValue("appName"));
                     crlObj.put("CreatedOn", crl.CreatedOn == null ? "" : crl.CreatedOn);
@@ -508,7 +508,7 @@ public class ShareProfiles extends AppCompatActivity {
                         // new entries
                         stat = new StatusDBHelper(ShareProfiles.this);
                         grpObj.put("sharedBy", stat.getValue("AndroidID"));
-                        grpObj.put("SharedAtDateTime", util.GetCurrentDateTime().toString());
+                        grpObj.put("SharedAtDateTime", util.GetCurrentDateTime(false).toString());
                         grpObj.put("appVersion", stat.getValue("apkVersion"));
                         grpObj.put("appName", stat.getValue("appName"));
                         grpObj.put("CreatedOn", grp.CreatedOn == null ? "" : grp.CreatedOn);
@@ -567,7 +567,7 @@ public class ShareProfiles extends AppCompatActivity {
                         // new entries
                         stat = new StatusDBHelper(ShareProfiles.this);
                         asrObj.put("sharedBy", stat.getValue("AndroidID"));
-                        asrObj.put("SharedAtDateTime", util.GetCurrentDateTime().toString());
+                        asrObj.put("SharedAtDateTime", util.GetCurrentDateTime(false).toString());
                         asrObj.put("appVersion", stat.getValue("apkVersion"));
                         asrObj.put("appName", stat.getValue("appName"));
                         asrObj.put("CreatedOn", asr.CreatedOn == null ? "" : asr.CreatedOn);

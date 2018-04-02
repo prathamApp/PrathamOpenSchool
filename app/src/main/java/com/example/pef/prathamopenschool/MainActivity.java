@@ -178,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnCom
                 // Set the Question & Options from json
                 try {
 
-                    aajKaSawaalStartTime = Util.GetCurrentDateTime();
+                    aajKaSawaalStartTime = Util.GetCurrentDateTime(false);
                     // Load Json in Array
                     JSONArray subJsonArray = loadQueJSONFromAsset();
 
@@ -367,7 +367,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnCom
                         // new changes
                         sc.Level = Integer.valueOf(String.valueOf(99).concat(String.valueOf(videoHintWatched)));
                         sc.StartTime = aajKaSawaalStartTime;
-                        sc.EndTime = Util.GetCurrentDateTime();
+                        sc.EndTime = Util.GetCurrentDateTime(false);
                         String gid;
                         gid = MultiPhotoSelectActivity.selectedGroupId;
                         if (gid.contains(",")) gid = gid.split(",")[0];
@@ -426,7 +426,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnCom
                         // new changes
                         sc.Level = Integer.valueOf(String.valueOf(99).concat(String.valueOf(videoHintWatched)));
                         sc.StartTime = aajKaSawaalStartTime;
-                        sc.EndTime = Util.GetCurrentDateTime();
+                        sc.EndTime = Util.GetCurrentDateTime(false);
                         String gid;
                         gid = MultiPhotoSelectActivity.selectedGroupId;
                         if (gid.contains(","))

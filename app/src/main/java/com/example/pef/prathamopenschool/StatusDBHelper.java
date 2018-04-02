@@ -60,7 +60,7 @@ public class StatusDBHelper extends DBHelper {
 
         Logs logs = new Logs();
 
-        logs.currentDateTime = Util.GetCurrentDateTime();
+        logs.currentDateTime = Util.GetCurrentDateTime(false);
         logs.errorType = "Error";
         logs.exceptionMessage = ex.getMessage().toString();
         logs.exceptionStackTrace = ex.getStackTrace().toString();

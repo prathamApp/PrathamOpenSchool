@@ -25,7 +25,7 @@ public class UserDBHelper extends DBHelper {
 
         Logs logs = new Logs();
 
-        logs.currentDateTime = Util.GetCurrentDateTime();
+        logs.currentDateTime = Util.GetCurrentDateTime(false);
         logs.errorType = "Error";
         logs.exceptionMessage = ex.getMessage().toString();
         logs.exceptionStackTrace = ex.getStackTrace().toString();
@@ -139,7 +139,7 @@ public class UserDBHelper extends DBHelper {
         contentValues.put("UserTypeID", user.UserTypeID);
         contentValues.put("GroupID", user.GroupID);
         contentValues.put("DeviceID", user.DeviceID);
-        contentValues.put("CreatedOn", Util.GetCurrentDateTime());
+        contentValues.put("CreatedOn", Util.GetCurrentDateTime(false));
         contentValues.put("DeletedOn", "");
         contentValues.put("IsActive", user.IsActive);
 

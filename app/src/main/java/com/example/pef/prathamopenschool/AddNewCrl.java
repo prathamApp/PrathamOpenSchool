@@ -128,7 +128,7 @@ public class AddNewCrl extends AppCompatActivity {
                             crlobj.CreatedBy = statdb.getValue("CRL");
                             crlobj.newCrl = true;
 
-                            crlobj.CreatedOn = util.GetCurrentDateTime();
+                            crlobj.CreatedOn = util.GetCurrentDateTime(false);
 
                             // Check AllSpinners Emptyness
                             int SpinnerValue = spinner_State.getSelectedItemPosition();

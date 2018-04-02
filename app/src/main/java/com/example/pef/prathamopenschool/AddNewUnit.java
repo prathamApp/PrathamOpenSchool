@@ -150,7 +150,7 @@ public class AddNewUnit extends AppCompatActivity {
                                 grpobj.newGroup = true;
                                 grpobj.VillageID = vilID;
                                 grpobj.ProgramID = Integer.parseInt(MultiPhotoSelectActivity.programID);
-                                grpobj.CreatedOn = util.GetCurrentDateTime().toString();
+                                grpobj.CreatedOn = util.GetCurrentDateTime(false).toString();
 
                                 gdb.insertData(grpobj);
 

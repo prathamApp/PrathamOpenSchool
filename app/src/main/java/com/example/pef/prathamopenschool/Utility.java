@@ -7,6 +7,7 @@ import android.util.Log;
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.UUID;
@@ -20,11 +21,16 @@ public class Utility {
     private final DateFormat dateFormat1 = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
 
 
-    public String GetCurrentDateTime() {
-//        Calendar cal = Calendar.getInstance();
-//        return dateFormat.format(cal.getTime());
-        Log.d("GetCurrentDateTime ", "" + MyApplication.getAccurateTimeStamp());
-        return MyApplication.getAccurateTimeStamp();
+    public String GetCurrentDateTime(boolean getSysTime) {
+        if (getSysTime) {
+            //
+            Calendar cal = Calendar.getInstance();
+            return dateFormat.format(cal.getTime());
+        }else {
+            //
+            Log.d("GetCurrentDateTime ", "" + MyApplication.getAccurateTimeStamp());
+            return MyApplication.getAccurateTimeStamp();
+        }
     }
 
 

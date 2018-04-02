@@ -18,7 +18,7 @@ public class PDFTracking {
 
     public static void calculateStartTime() {
         Utility util = new Utility();
-        startTime = util.GetCurrentDateTime();
+        startTime = util.GetCurrentDateTime(false);
     }
 
     public static void calculateEndTime() {
@@ -27,7 +27,7 @@ public class PDFTracking {
 
             Boolean _wasSuccessful = null;
             Utility util = new Utility();
-            String endTime = util.GetCurrentDateTime();
+            String endTime = util.GetCurrentDateTime(false);
             Score score = new Score();
             score.SessionID = MultiPhotoSelectActivity.sessionId;
             score.ResourceID = CardAdapter.resId;
