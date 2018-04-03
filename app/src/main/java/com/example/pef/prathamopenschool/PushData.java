@@ -493,7 +493,7 @@ public class PushData extends AppCompatActivity {
                                 aserObj.put("SharedAtDateTime", aserList.get(i).SharedAtDateTime == null ? "" : aserList.get(i).SharedAtDateTime);
                                 aserObj.put("appName", aserList.get(i).appName == null ? "" : aserList.get(i).appName);
                                 aserObj.put("appVersion", aserList.get(i).appVersion == null ? "" : aserList.get(i).appVersion);
-                                aserObj.put("CreatedOn", aserList.get(i).CreatedOn == null ? "" : groupsList.get(i).CreatedOn);
+                                aserObj.put("CreatedOn", aserList.get(i).CreatedOn == null ? "" : aserList.get(i).CreatedOn);
 
                                 aserData.put(aserObj);
                             }

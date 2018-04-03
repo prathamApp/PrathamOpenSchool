@@ -1008,9 +1008,10 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
     }*/
 
 
-    @Override
+        @Override
     protected void onResume() {
         super.onResume();
+        setContentView(R.layout.group_select);
         myView = (RelativeLayout) findViewById(R.id.my_layoutId);
         radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
         tv_title = (TextView) findViewById(R.id.tv_select);
