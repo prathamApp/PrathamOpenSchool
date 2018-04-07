@@ -22,7 +22,7 @@ public class MyApplication extends Application {
 
     private static MyApplication mInstance;
     static int count;
-    static Timer T;
+    static Timer timer;
 
     @Override
     public void onCreate() {
@@ -40,8 +40,8 @@ public class MyApplication extends Application {
     }
 
     public static void startTimer() {
-        T = new Timer();
-        T.scheduleAtFixedRate(new TimerTask() {
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 count++;
@@ -50,8 +50,8 @@ public class MyApplication extends Application {
     }
 
     public static void resetTimer() {
-        if (T != null) {
-            T.cancel();
+        if (timer != null) {
+            timer.cancel();
             count = 0;
         } else {
             count = 00;

@@ -246,7 +246,9 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
         // Timer Start
         // Todo get GPS DateTime & Location
 //        if (latitudeAvailable == false || longitudeAvailable == false || GPSDateTimeAvailable == false) {
-        if (true) {
+        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        mProvider = mLocationManager.getProvider(LocationManager.GPS_PROVIDER);
+        if (MyApplication.timer == null) {
             // Execute GPS Location & Time Dialog
             // GPS Signal Dialog
             gpsTimeDialog = new Dialog(this);
@@ -267,8 +269,6 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
             sInstance = this;
 
             // execution of the app
-            mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            mProvider = mLocationManager.getProvider(LocationManager.GPS_PROVIDER);
             if (mProvider == null) {
                 Log.e(TAG, "Unable to get GPS_PROVIDER");
                 Toast.makeText(this, "gps_not_supported", Toast.LENGTH_SHORT).show();
@@ -289,7 +289,7 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
                 e.printStackTrace();
             }
 
-        } else {
+        } /*else {
 
             // GET GPS TIME
             sInstance = this;
@@ -304,7 +304,7 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
                 return;
             }
             gpsStart();
-        }
+        }*/
         startService(new Intent(this, WebViewService.class));
 
 //        tv_title = (TextView) findViewById(R.id.tv_select);
@@ -1008,7 +1008,7 @@ public class MultiPhotoSelectActivity extends AppCompatActivity implements Locat
     }*/
 
 
-        @Override
+    @Override
     protected void onResume() {
         super.onResume();
         setContentView(R.layout.group_select);
